@@ -247,7 +247,3 @@ Before deploying publicly, update at least:
 - CORS allowed origins
 - default seeded credentials
 - HTTPS termination and secure runtime configuration
-
-## 14) License
-
-No license file is currently defined. Add a `LICENSE` file if you plan to distribute this project publicly.
