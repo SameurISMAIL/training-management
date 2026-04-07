@@ -19,8 +19,6 @@ The project is split into:
   - Employeurs
   - Utilisateurs (admin page)
 - Dashboard and statistics pages
-- Protected Angular routes and secured backend endpoints
-- Empty-list endpoints return `200 []` (not `404`) for better frontend behavior
 
 ## 2) Tech Stack
 
