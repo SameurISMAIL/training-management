@@ -1,0 +1,90 @@
+.stats-page {
+	display: grid;
+	gap: 24px;
+}
+
+.loading-container {
+	min-height: 320px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.cards-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.stat-card {
+	padding: 20px;
+	border-radius: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	background: var(--surface-bg);
+	border-left: 4px solid transparent;
+}
+
+.card-formations {
+	border-left-color: var(--primary-color);
+}
+
+.card-participants {
+	border-left-color: var(--teal-color);
+}
+
+.card-budget {
+	border-left-color: var(--orange-color);
+}
+
+.card-year {
+	border-left-color: var(--green-color);
+}
+
+.card-label {
+	font-size: 14px;
+	color: #63708a;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.card-value {
+	font-size: 32px;
+	font-weight: 700;
+	color: #1f2937;
+}
+
+.charts-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+	gap: 20px;
+}
+
+.chart-card {
+	padding: 20px;
+	border-radius: 12px;
+	min-height: 420px;
+	box-shadow: var(--card-shadow);
+}
+
+.chart-card-wide {
+	grid-column: 1 / -1;
+}
+
+.chart-card h2 {
+	margin: 0 0 16px;
+	font-size: 20px;
+	font-weight: 600;
+}
+
+.chart-wrapper {
+	position: relative;
+	height: 320px;
+}
+
+@media (max-width: 767px) {
+	.cards-grid {
+		grid-template-columns: 1fr;
+	}
+}

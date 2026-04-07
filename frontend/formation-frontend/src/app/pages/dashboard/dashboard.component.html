@@ -1,0 +1,43 @@
+<div class="page-container dashboard-page">
+	<mat-card class="welcome-card">
+		<div>
+			<h1>Bienvenue {{ login || 'Utilisateur' }}</h1>
+			<p>Rôle: <strong>{{ role || 'N/A' }}</strong></p>
+		</div>
+		<mat-icon class="welcome-avatar">account_circle</mat-icon>
+	</mat-card>
+
+	<section class="cards-grid">
+		<a class="feature-card-link" *ngFor="let card of quickAccessCards" [routerLink]="card.link">
+			<mat-card class="feature-card">
+				<div class="card-icon-wrap" [ngClass]="card.colorClass">
+					<mat-icon>{{ card.icon }}</mat-icon>
+				</div>
+				<h2>{{ card.title }}</h2>
+				<p class="card-subtitle">{{ card.count }} éléments</p>
+			</mat-card>
+		</a>
+
+		<ng-container *ngIf="isAdmin">
+			<a class="feature-card-link" *ngFor="let card of adminCards" [routerLink]="card.link">
+				<mat-card class="feature-card">
+					<div class="card-icon-wrap" [ngClass]="card.colorClass">
+						<mat-icon>{{ card.icon }}</mat-icon>
+					</div>
+					<h2>{{ card.title }}</h2>
+					<p class="card-subtitle">Accès rapide</p>
+				</mat-card>
+			</a>
+		</ng-container>
+	</section>
+
+	<mat-card class="latest-card">
+		<h2>Dernières formations</h2>
+		<mat-list>
+			<mat-list-item *ngFor="let formation of latestFormations">
+				<span matListItemTitle>{{ formation.titre }}</span>
+				<span matListItemLine>{{ formation.annee }}</span>
+			</mat-list-item>
+		</mat-list>
+	</mat-card>
+</div>

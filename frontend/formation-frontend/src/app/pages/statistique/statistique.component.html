@@ -1,0 +1,67 @@
+<div class="page-container stats-page">
+	<div class="loading-container" *ngIf="loading">
+		<mat-spinner diameter="48"></mat-spinner>
+	</div>
+
+	<ng-container *ngIf="!loading">
+		<div class="cards-grid">
+			<mat-card class="stat-card card-formations">
+				<span class="card-label">Total formations</span>
+				<span class="card-value">{{ totalFormations }}</span>
+			</mat-card>
+
+			<mat-card class="stat-card card-participants">
+				<span class="card-label">Total participants</span>
+				<span class="card-value">{{ totalParticipants }}</span>
+			</mat-card>
+
+			<mat-card class="stat-card card-budget">
+				<span class="card-label">Total budget</span>
+				<span class="card-value">{{ totalBudget | currency:'TND':'symbol':'1.0-0' }}</span>
+			</mat-card>
+
+			<mat-card class="stat-card card-year">
+				<span class="card-label">Formations cette année</span>
+				<span class="card-value">{{ formationsThisYear }}</span>
+			</mat-card>
+		</div>
+
+		<div class="charts-grid">
+			<mat-card class="chart-card">
+				<h2>Formations par domaine</h2>
+				<div class="chart-wrapper">
+					<canvas
+						baseChart
+						[data]="barChartData"
+						[options]="barChartOptions"
+						[type]="'bar'">
+					</canvas>
+				</div>
+			</mat-card>
+
+			<mat-card class="chart-card">
+				<h2>Participants par structure</h2>
+				<div class="chart-wrapper">
+					<canvas
+						baseChart
+						[data]="pieChartData"
+						[options]="pieChartOptions"
+						[type]="'pie'">
+					</canvas>
+				</div>
+			</mat-card>
+
+			<mat-card class="chart-card chart-card-wide">
+				<h2>Formations par année</h2>
+				<div class="chart-wrapper">
+					<canvas
+						baseChart
+						[data]="lineChartData"
+						[options]="lineChartOptions"
+						[type]="'line'">
+					</canvas>
+				</div>
+			</mat-card>
+		</div>
+	</ng-container>
+</div>

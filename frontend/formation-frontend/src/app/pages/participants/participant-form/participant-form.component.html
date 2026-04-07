@@ -1,0 +1,81 @@
+<div class="page-container participant-form-page">
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+
+  <form *ngIf="!loading" class="participant-form" [formGroup]="participantForm" (ngSubmit)="onSubmit()">
+    <mat-progress-bar mode="indeterminate" *ngIf="saving"></mat-progress-bar>
+    <h1>{{ isEditMode ? 'Modifier Participant' : 'Nouveau Participant' }}</h1>
+
+    <div class="form-grid two-cols">
+    <mat-form-field appearance="outline">
+      <mat-label>Nom</mat-label>
+      <input matInput formControlName="nom" />
+      <mat-error *ngIf="nomControl.hasError('required') && (nomControl.touched || nomControl.dirty)">
+        Le nom est obligatoire.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Prénom</mat-label>
+      <input matInput formControlName="prenom" />
+      <mat-error *ngIf="prenomControl.hasError('required') && (prenomControl.touched || prenomControl.dirty)">
+        Le prénom est obligatoire.
+      </mat-error>
+    </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-row">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" />
+      <mat-error *ngIf="emailControl.hasError('required') && (emailControl.touched || emailControl.dirty)">
+        L'email est obligatoire.
+      </mat-error>
+      <mat-error *ngIf="emailControl.hasError('email') && (emailControl.touched || emailControl.dirty)">
+        L'email n'est pas valide.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-row">
+      <mat-label>Téléphone</mat-label>
+      <input matInput type="number" formControlName="tel" />
+      <mat-error *ngIf="telControl.hasError('required') && (telControl.touched || telControl.dirty)">
+        Le téléphone est obligatoire.
+      </mat-error>
+    </mat-form-field>
+
+    <div class="form-grid two-cols">
+    <mat-form-field appearance="outline">
+      <mat-label>Structure</mat-label>
+      <mat-select formControlName="idStructure">
+        <mat-option *ngFor="let structure of structures" [value]="structure.id">
+          {{ structure.libelle }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="idStructureControl.hasError('required') && (idStructureControl.touched || idStructureControl.dirty)">
+        La structure est obligatoire.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Profil</mat-label>
+      <mat-select formControlName="idProfil">
+        <mat-option *ngFor="let profil of profils" [value]="profil.id">
+          {{ profil.libelle }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="idProfilControl.hasError('required') && (idProfilControl.touched || idProfilControl.dirty)">
+        Le profil est obligatoire.
+      </mat-error>
+    </mat-form-field>
+    </div>
+
+    <div class="actions">
+      <button mat-stroked-button type="button" (click)="cancel()">Annuler</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="saving">
+        <mat-icon>save</mat-icon>
+        {{ saving ? 'Enregistrement...' : (isEditMode ? 'Mettre à jour' : 'Créer') }}
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,27 @@
+<div class="page-container">
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="44"></mat-spinner>
+  </div>
+
+  <mat-card class="detail-card" *ngIf="!loading && formation">
+    <div class="page-header detail-header">
+      <h1>{{ formation.titre }}</h1>
+      <div class="actions">
+        <button mat-stroked-button [routerLink]="['/formations']">Retour</button>
+        <button mat-raised-button color="primary" [routerLink]="['/formations', formation.id, 'edit']">
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div><strong>Année:</strong> {{ formation.annee }}</div>
+      <div><strong>Durée:</strong> {{ formation.duree }} jours</div>
+      <div><strong>Budget:</strong> {{ formation.budget | currency:'TND':'symbol':'1.0-0' }}</div>
+      <div><strong>Domaine:</strong> {{ formation.domaine?.libelle || '-' }}</div>
+      <div><strong>Formateur:</strong> {{ formation.formateur?.nom }} {{ formation.formateur?.prenom }}</div>
+      <div><strong>Participants:</strong> {{ formation.participants.length }}</div>
+    </div>
+  </mat-card>
+</div>

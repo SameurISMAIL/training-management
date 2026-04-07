@@ -1,0 +1,80 @@
+<div class="page-container formateur-form-page">
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+
+  <form *ngIf="!loading" class="formateur-form" [formGroup]="formateurForm" (ngSubmit)="onSubmit()">
+    <mat-progress-bar mode="indeterminate" *ngIf="saving"></mat-progress-bar>
+    <h1>{{ isEditMode ? 'Modifier Formateur' : 'Nouveau Formateur' }}</h1>
+
+    <div class="form-grid two-cols">
+    <mat-form-field appearance="outline">
+      <mat-label>Nom</mat-label>
+      <input matInput formControlName="nom" />
+      <mat-error *ngIf="nomControl.hasError('required') && (nomControl.touched || nomControl.dirty)">
+        Le nom est obligatoire.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Prénom</mat-label>
+      <input matInput formControlName="prenom" />
+      <mat-error *ngIf="prenomControl.hasError('required') && (prenomControl.touched || prenomControl.dirty)">
+        Le prénom est obligatoire.
+      </mat-error>
+    </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-row">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" />
+      <mat-error *ngIf="emailControl.hasError('required') && (emailControl.touched || emailControl.dirty)">
+        L'email est obligatoire.
+      </mat-error>
+      <mat-error *ngIf="emailControl.hasError('email') && (emailControl.touched || emailControl.dirty)">
+        L'email n'est pas valide.
+      </mat-error>
+    </mat-form-field>
+
+    <div class="form-grid two-cols">
+    <mat-form-field appearance="outline">
+      <mat-label>Téléphone</mat-label>
+      <input matInput type="number" formControlName="tel" />
+      <mat-error *ngIf="telControl.hasError('required') && (telControl.touched || telControl.dirty)">
+        Le téléphone est obligatoire.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Type</mat-label>
+      <mat-select formControlName="type">
+        <mat-option value="interne">Interne</mat-option>
+        <mat-option value="externe">Externe</mat-option>
+      </mat-select>
+      <mat-error *ngIf="typeControl.hasError('required') && (typeControl.touched || typeControl.dirty)">
+        Le type est obligatoire.
+      </mat-error>
+    </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-row">
+      <mat-label>Employeur</mat-label>
+      <mat-select formControlName="idEmployeur">
+        <mat-option *ngFor="let employeur of employeurs" [value]="employeur.id">
+          {{ employeur.nomEmployeur }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="idEmployeurControl.hasError('required') && (idEmployeurControl.touched || idEmployeurControl.dirty)">
+        L'employeur est obligatoire.
+      </mat-error>
+    </mat-form-field>
+
+    <div class="actions">
+      <button mat-stroked-button type="button" (click)="cancel()">Annuler</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="saving">
+        <mat-icon>save</mat-icon>
+        {{ saving ? 'Enregistrement...' : (isEditMode ? 'Mettre à jour' : 'Créer') }}
+      </button>
+    </div>
+  </form>
+</div>

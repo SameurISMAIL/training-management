@@ -1,0 +1,99 @@
+<div class="page-container formation-form-page">
+	<div class="loading-container" *ngIf="loading">
+		<mat-spinner diameter="48"></mat-spinner>
+	</div>
+
+	<form *ngIf="!loading" class="formation-form" [formGroup]="formationForm" (ngSubmit)="onSubmit()">
+		<mat-progress-bar mode="indeterminate" *ngIf="saving"></mat-progress-bar>
+		<h1>{{ isEditMode ? 'Modifier Formation' : 'Nouvelle Formation' }}</h1>
+
+		<mat-form-field appearance="outline" class="full-row">
+			<mat-label>Titre</mat-label>
+			<input matInput formControlName="titre" />
+			<mat-error *ngIf="titreControl.hasError('required') && (titreControl.touched || titreControl.dirty)">
+				Le titre est obligatoire.
+			</mat-error>
+		</mat-form-field>
+
+		<div class="form-grid two-cols">
+		<mat-form-field appearance="outline">
+			<mat-label>Année</mat-label>
+			<input matInput type="number" formControlName="annee" />
+			<mat-error *ngIf="anneeControl.hasError('required') && (anneeControl.touched || anneeControl.dirty)">
+				L'année est obligatoire.
+			</mat-error>
+			<mat-error *ngIf="anneeControl.hasError('min') && (anneeControl.touched || anneeControl.dirty)">
+				L'année minimale est 2000.
+			</mat-error>
+			<mat-error *ngIf="anneeControl.hasError('max') && (anneeControl.touched || anneeControl.dirty)">
+				L'année maximale est 2100.
+			</mat-error>
+		</mat-form-field>
+
+		<mat-form-field appearance="outline">
+			<mat-label>Durée (jours)</mat-label>
+			<input matInput type="number" formControlName="duree" />
+			<mat-error *ngIf="dureeControl.hasError('required') && (dureeControl.touched || dureeControl.dirty)">
+				La durée est obligatoire.
+			</mat-error>
+			<mat-error *ngIf="dureeControl.hasError('min') && (dureeControl.touched || dureeControl.dirty)">
+				La durée doit être au moins 1 jour.
+			</mat-error>
+		</mat-form-field>
+		</div>
+
+		<mat-form-field appearance="outline" class="full-row">
+			<mat-label>Budget</mat-label>
+			<input matInput type="number" formControlName="budget" />
+			<mat-error *ngIf="budgetControl.hasError('required') && (budgetControl.touched || budgetControl.dirty)">
+				Le budget est obligatoire.
+			</mat-error>
+			<mat-error *ngIf="budgetControl.hasError('min') && (budgetControl.touched || budgetControl.dirty)">
+				Le budget ne peut pas être négatif.
+			</mat-error>
+		</mat-form-field>
+
+		<div class="form-grid two-cols">
+		<mat-form-field appearance="outline">
+			<mat-label>Domaine</mat-label>
+			<mat-select formControlName="idDomaine">
+				<mat-option *ngFor="let domaine of domaines" [value]="domaine.id">
+					{{ domaine.libelle }}
+				</mat-option>
+			</mat-select>
+			<mat-error *ngIf="idDomaineControl.hasError('required') && (idDomaineControl.touched || idDomaineControl.dirty)">
+				Le domaine est obligatoire.
+			</mat-error>
+		</mat-form-field>
+
+		<mat-form-field appearance="outline">
+			<mat-label>Formateur</mat-label>
+			<mat-select formControlName="idFormateur">
+				<mat-option *ngFor="let formateur of formateurs" [value]="formateur.id">
+					{{ formateur.nom }} {{ formateur.prenom }}
+				</mat-option>
+			</mat-select>
+			<mat-error *ngIf="idFormateurControl.hasError('required') && (idFormateurControl.touched || idFormateurControl.dirty)">
+				Le formateur est obligatoire.
+			</mat-error>
+		</mat-form-field>
+		</div>
+
+		<mat-form-field appearance="outline" class="full-row">
+			<mat-label>Participants</mat-label>
+			<mat-select formControlName="participantIds" multiple>
+				<mat-option *ngFor="let participant of participants" [value]="participant.id">
+					{{ participant.nom }} {{ participant.prenom }}
+				</mat-option>
+			</mat-select>
+		</mat-form-field>
+
+		<div class="actions">
+			<button mat-stroked-button type="button" (click)="cancel()">Annuler</button>
+			<button mat-raised-button color="primary" type="submit" [disabled]="saving">
+				<mat-icon>save</mat-icon>
+				{{ saving ? 'Enregistrement...' : (isEditMode ? 'Mettre à jour' : 'Créer') }}
+			</button>
+		</div>
+	</form>
+</div>

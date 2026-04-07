@@ -1,0 +1,22 @@
+<mat-toolbar color="primary" class="navbar">
+  <button *ngIf="showMenuButton" mat-icon-button type="button" class="menu-btn" (click)="toggleMenu()" aria-label="Menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <div class="brand">
+    <mat-icon class="brand-icon">school</mat-icon>
+    <span class="app-title">Formation Manager</span>
+  </div>
+
+  <span class="spacer"></span>
+
+  <mat-chip *ngIf="authService.isLoggedIn()" class="user-login" highlighted>
+    <mat-icon>person</mat-icon>
+    {{ authService.getLogin() }}
+  </mat-chip>
+
+  <button mat-button type="button" class="logout-btn" *ngIf="authService.isLoggedIn()" (click)="logout()">
+    <mat-icon>exit_to_app</mat-icon>
+    Déconnexion
+  </button>
+</mat-toolbar>

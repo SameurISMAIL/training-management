@@ -1,0 +1,9 @@
+target/
+
+# Node/Angular build artifacts
+frontend/formation-frontend/node_modules/
+frontend/formation-frontend/dist/
+frontend/formation-frontend/.angular/
+
+# Logs
+*.log

@@ -1,0 +1,61 @@
+.admin-users-page {
+  padding: 24px;
+  display: grid;
+  gap: 24px;
+}
+
+.form-card,
+.table-card {
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.user-form {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.user-form mat-form-field {
+  width: 100%;
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.search-field {
+  width: 100%;
+  max-width: 320px;
+}
+
+.loading-container {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.actions-cell {
+  display: flex;
+  align-items: center;
+}

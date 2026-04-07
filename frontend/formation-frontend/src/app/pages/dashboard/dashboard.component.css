@@ -1,0 +1,99 @@
+.dashboard-page {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.welcome-card {
+	padding: 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+	color: #fff;
+}
+
+.welcome-card h1 {
+	margin: 0 0 8px;
+}
+
+.welcome-card p {
+	margin: 0;
+}
+
+.welcome-avatar {
+	font-size: 56px;
+	width: 56px;
+	height: 56px;
+}
+
+.cards-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 16px;
+}
+
+.feature-card-link {
+	text-decoration: none;
+	color: inherit;
+}
+
+.feature-card {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 16px;
+	cursor: pointer;
+	box-shadow: var(--card-shadow);
+}
+
+.feature-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.feature-card h2 {
+	margin: 0;
+	font-size: 1.05rem;
+}
+
+.card-subtitle {
+	margin: 0;
+	color: var(--muted-text);
+}
+
+.card-icon-wrap {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+}
+
+.card-indigo {
+	background: var(--primary-color);
+}
+
+.card-teal {
+	background: var(--teal-color);
+}
+
+.card-orange {
+	background: var(--orange-color);
+}
+
+.card-red {
+	background: var(--red-color);
+}
+
+.latest-card {
+	padding: 8px 16px;
+	box-shadow: var(--card-shadow);
+}
+
+.latest-card h2 {
+	margin: 12px 0 8px;
+}

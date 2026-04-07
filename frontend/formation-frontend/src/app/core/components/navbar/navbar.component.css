@@ -1,0 +1,55 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 64px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: var(--card-shadow);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  color: #fff;
+}
+
+.app-title {
+  font-weight: 700;
+  color: #fff;
+  font-size: 20px;
+  letter-spacing: 0.03em;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.user-login {
+  margin-right: 10px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.menu-btn,
+.logout-btn {
+  color: #fff;
+}
+
+.logout-btn {
+  border-radius: 8px;
+}
+
+@media (max-width: 767px) {
+  .app-title {
+    font-size: 18px;
+  }
+
+  .user-login {
+    display: none;
+  }
+}
