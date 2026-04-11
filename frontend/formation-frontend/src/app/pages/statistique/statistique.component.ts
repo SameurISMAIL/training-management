@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartData, ChartOptions, registerables } from 'chart.js';
 import { forkJoin } from 'rxjs';
@@ -13,7 +13,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-statistique',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatProgressSpinnerModule, BaseChartDirective],
+  imports: [CommonModule, MatCardModule, MatIconModule, BaseChartDirective],
   templateUrl: './statistique.component.html',
   styleUrl: './statistique.component.css'
 })
@@ -25,34 +25,34 @@ export class StatistiqueComponent implements OnInit {
   totalBudget = 0;
   formationsThisYear = 0;
 
-  barChartData: ChartData<'bar'> = {
+  barData: ChartData<'bar'> = {
     labels: [],
     datasets: [{ data: [], label: 'Formations' }]
   };
 
-  pieChartData: ChartData<'pie'> = {
+  pieData: ChartData<'pie'> = {
     labels: [],
     datasets: [{ data: [] }]
   };
 
-  lineChartData: ChartData<'line'> = {
+  lineData: ChartData<'line'> = {
     labels: [],
     datasets: [{ data: [], label: 'Formations', fill: false, tension: 0.35 }]
   };
 
-  barChartOptions: ChartOptions<'bar'> = {
+  barOptions: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: { legend: { display: true } }
   };
 
-  pieChartOptions: ChartOptions<'pie'> = {
+  pieOptions: ChartOptions<'pie'> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: { legend: { position: 'bottom' } }
   };
 
-  lineChartOptions: ChartOptions<'line'> = {
+  lineOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: { legend: { display: true } },
@@ -93,17 +93,17 @@ export class StatistiqueComponent implements OnInit {
     byAnnee: StatCountItem[],
     budgetTotal: number
   ): void {
-    this.barChartData = {
+    this.barData = {
       labels: byDomaine.map((item) => item.label),
       datasets: [{ data: byDomaine.map((item) => item.count), label: 'Formations par domaine' }]
     };
 
-    this.pieChartData = {
+    this.pieData = {
       labels: byStructure.map((item) => item.label),
       datasets: [{ data: byStructure.map((item) => item.count) }]
     };
 
-    this.lineChartData = {
+    this.lineData = {
       labels: byAnnee.map((item) => item.label),
       datasets: [{ data: byAnnee.map((item) => item.count), label: 'Formations par année', fill: false, tension: 0.35 }]
     };

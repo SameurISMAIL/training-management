@@ -1,12 +1,18 @@
 .navbar {
+  height: 64px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
   position: sticky;
   top: 0;
-  z-index: 10;
-  height: 64px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
-  box-shadow: var(--card-shadow);
+  z-index: 100;
 }
 
+.navbar-left,
+.navbar-right,
 .brand {
   display: flex;
   align-items: center;
@@ -14,30 +20,30 @@
 }
 
 .brand-icon {
-  color: #fff;
+  color: var(--primary);
 }
 
 .app-title {
-  font-weight: 700;
-  color: #fff;
   font-size: 20px;
-  letter-spacing: 0.03em;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
-.spacer {
-  flex: 1 1 auto;
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
 }
 
 .user-login {
-  margin-right: 10px;
+  color: var(--text-secondary);
   font-weight: 500;
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
-}
-
-.menu-btn,
-.logout-btn {
-  color: #fff;
 }
 
 .logout-btn {
@@ -45,11 +51,13 @@
 }
 
 @media (max-width: 767px) {
-  .app-title {
-    font-size: 18px;
+  .navbar {
+    padding: 0 12px;
   }
 
-  .user-login {
+  .app-title,
+  .user-login,
+  .logout-btn span {
     display: none;
   }
 }

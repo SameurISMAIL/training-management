@@ -1,18 +1,11 @@
-<ng-container *ngIf="showShell(); else authRoutes">
-  <mat-sidenav-container class="app-shell" (backdropClick)="onBackdropClick()">
-    <mat-sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile || sidenavOpened" class="app-sidenav">
-      <app-sidebar (navigate)="onSidebarNavigate()"></app-sidebar>
-    </mat-sidenav>
-
-    <mat-sidenav-content class="app-content">
-      <app-navbar [showMenuButton]="isMobile" (menuClick)="onMenuClick()"></app-navbar>
-      <div class="content-wrapper">
-        <router-outlet></router-outlet>
-      </div>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-</ng-container>
-
-<ng-template #authRoutes>
-  <router-outlet></router-outlet>
-</ng-template>
+<mat-sidenav-container>
+  <mat-sidenav #sidenav mode="side" [opened]="!isLoginRoute" class="app-sidenav">
+    <app-sidebar></app-sidebar>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <app-navbar (toggleSidenav)="sidenav.toggle()"></app-navbar>
+    <div class="main-content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

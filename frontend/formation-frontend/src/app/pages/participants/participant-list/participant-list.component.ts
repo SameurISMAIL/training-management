@@ -1,6 +1,5 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -13,9 +12,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatChipsModule } from '@angular/material/chips';
 
 import { Participant } from '../../../core/models/participant.model';
 import { ParticipantService } from '../../../core/services/participant.service';
+import { ParticipantDialogComponent } from '../participant-dialog/participant-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
@@ -23,7 +24,6 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule,
     MatCardModule,
     MatTableModule,
     MatPaginatorModule,
@@ -35,7 +35,8 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
     MatProgressSpinnerModule,
     MatDialogModule,
     MatSnackBarModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatChipsModule
   ],
   templateUrl: './participant-list.component.html',
   styleUrl: './participant-list.component.css'
@@ -92,27 +93,95 @@ export class ParticipantListComponent implements OnInit, AfterViewInit {
 
   openDeleteDialog(participant: Participant): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '360px',
-      disableClose: true
+      width: '680px',
+      panelClass: 'custom-dialog',
+      disableClose: true,
+      data: {
+        title: 'Supprimer le participant',
+        message: `Voulez-vous vraiment supprimer le participant ${participant.nom} ${participant.prenom} ?`
+      }
     });
-
-    dialogRef.componentInstance.title = 'Supprimer le participant';
-    dialogRef.componentInstance.message = `Voulez-vous vraiment supprimer le participant ${participant.nom} ${participant.prenom} ?`;
-    dialogRef.componentInstance.confirmText = 'Supprimer';
-    dialogRef.componentInstance.cancelText = 'Annuler';
 
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
         this.participantService.delete(participant.id).subscribe({
           next: () => {
             this.snackBar.open('Participant supprimé', 'Fermer', {
-              duration: 3000
+              duration: 3000,
+              panelClass: ['success-snack']
             });
             this.loadParticipants();
           },
-          error: () => this.loadParticipants()
+          error: () => {
+            this.snackBar.open('Erreur lors de la suppression', 'Fermer', {
+              duration: 4000,
+              panelClass: ['error-snack']
+            });
+          }
         });
       }
+    });
+  }
+
+  openCreateDialog(): void {
+    const dialogRef = this.dialog.open(ParticipantDialogComponent, {
+      width: '680px',
+      panelClass: 'custom-dialog',
+      disableClose: true,
+      data: { mode: 'create' }
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
+
+      this.participantService.create(result).subscribe({
+        next: () => {
+          this.snackBar.open('Participant créé avec succès', 'Fermer', {
+            duration: 3000,
+            panelClass: ['success-snack']
+          });
+          this.loadParticipants();
+        },
+        error: () => {
+          this.snackBar.open('Erreur lors de la création', 'Fermer', {
+            duration: 4000,
+            panelClass: ['error-snack']
+          });
+        }
+      });
+    });
+  }
+
+  openEditDialog(participant: Participant): void {
+    const dialogRef = this.dialog.open(ParticipantDialogComponent, {
+      width: '680px',
+      panelClass: 'custom-dialog',
+      disableClose: true,
+      data: { mode: 'edit', participant }
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
+
+      this.participantService.update(participant.id, result).subscribe({
+        next: () => {
+          this.snackBar.open('Participant modifié avec succès', 'Fermer', {
+            duration: 3000,
+            panelClass: ['success-snack']
+          });
+          this.loadParticipants();
+        },
+        error: () => {
+          this.snackBar.open('Erreur lors de la modification', 'Fermer', {
+            duration: 4000,
+            panelClass: ['error-snack']
+          });
+        }
+      });
     });
   }
 

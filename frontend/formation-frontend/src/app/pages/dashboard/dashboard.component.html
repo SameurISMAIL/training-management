@@ -1,43 +1,63 @@
-<div class="page-container dashboard-page">
-	<mat-card class="welcome-card">
-		<div>
-			<h1>Bienvenue {{ login || 'Utilisateur' }}</h1>
-			<p>Rôle: <strong>{{ role || 'N/A' }}</strong></p>
+<div class="page-wrapper" *ngIf="!loading; else loadingTpl">
+	<div class="welcome-banner">
+		<div class="welcome-text">
+			<h2>Bonjour, {{ login }} 👋</h2>
+			<p>Bienvenue sur la plateforme Excellent Training</p>
+			<span class="role-badge">{{ role }}</span>
 		</div>
-		<mat-icon class="welcome-avatar">account_circle</mat-icon>
-	</mat-card>
+		<mat-icon class="welcome-icon">school</mat-icon>
+	</div>
 
-	<section class="cards-grid">
-		<a class="feature-card-link" *ngFor="let card of quickAccessCards" [routerLink]="card.link">
-			<mat-card class="feature-card">
-				<div class="card-icon-wrap" [ngClass]="card.colorClass">
-					<mat-icon>{{ card.icon }}</mat-icon>
+	<div class="stats-grid">
+		<div class="stat-card blue" routerLink="/formations">
+			<div class="stat-icon"><mat-icon>school</mat-icon></div>
+			<div class="stat-info">
+				<span class="stat-number">{{ totalFormations }}</span>
+				<span class="stat-label">Formations</span>
+			</div>
+		</div>
+		<div class="stat-card teal" routerLink="/formateurs">
+			<div class="stat-icon"><mat-icon>person_outline</mat-icon></div>
+			<div class="stat-info">
+				<span class="stat-number">{{ totalFormateurs }}</span>
+				<span class="stat-label">Formateurs</span>
+			</div>
+		</div>
+		<div class="stat-card orange" routerLink="/participants">
+			<div class="stat-icon"><mat-icon>group</mat-icon></div>
+			<div class="stat-info">
+				<span class="stat-number">{{ totalParticipants }}</span>
+				<span class="stat-label">Participants</span>
+			</div>
+		</div>
+	</div>
+
+	<mat-card class="recent-card">
+		<mat-card-header>
+			<mat-card-title>
+				<mat-icon>history</mat-icon> Formations récentes
+			</mat-card-title>
+			<a mat-button color="primary" routerLink="/formations">Voir tout</a>
+		</mat-card-header>
+		<mat-card-content>
+			<mat-list>
+				<mat-list-item *ngFor="let f of recentFormations">
+					<mat-icon matListItemIcon>school</mat-icon>
+					<span matListItemTitle>{{ f.titre }}</span>
+					<span matListItemLine>{{ f.annee }} · {{ f.duree }} jours · {{ f.budget | number }} TND</span>
+					<mat-chip>{{ f.domaine?.libelle }}</mat-chip>
+				</mat-list-item>
+				<div *ngIf="recentFormations.length === 0" class="empty-state">
+					<mat-icon>info_outline</mat-icon>
+					<span>Aucune formation enregistrée</span>
 				</div>
-				<h2>{{ card.title }}</h2>
-				<p class="card-subtitle">{{ card.count }} éléments</p>
-			</mat-card>
-		</a>
-
-		<ng-container *ngIf="isAdmin">
-			<a class="feature-card-link" *ngFor="let card of adminCards" [routerLink]="card.link">
-				<mat-card class="feature-card">
-					<div class="card-icon-wrap" [ngClass]="card.colorClass">
-						<mat-icon>{{ card.icon }}</mat-icon>
-					</div>
-					<h2>{{ card.title }}</h2>
-					<p class="card-subtitle">Accès rapide</p>
-				</mat-card>
-			</a>
-		</ng-container>
-	</section>
-
-	<mat-card class="latest-card">
-		<h2>Dernières formations</h2>
-		<mat-list>
-			<mat-list-item *ngFor="let formation of latestFormations">
-				<span matListItemTitle>{{ formation.titre }}</span>
-				<span matListItemLine>{{ formation.annee }}</span>
-			</mat-list-item>
-		</mat-list>
+			</mat-list>
+		</mat-card-content>
 	</mat-card>
 </div>
+
+<ng-template #loadingTpl>
+	<div class="loading-block">
+		<mat-spinner diameter="48"></mat-spinner>
+	</div>
+</ng-template>

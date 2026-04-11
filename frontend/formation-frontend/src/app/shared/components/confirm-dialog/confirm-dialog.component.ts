@@ -1,28 +1,24 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
+export interface ConfirmDialogData {
+  title: string;
+  message: string;
+}
 
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatButtonModule],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule],
   templateUrl: './confirm-dialog.component.html',
   styleUrl: './confirm-dialog.component.css'
 })
 export class ConfirmDialogComponent {
-  private readonly dialogRef = inject(MatDialogRef<ConfirmDialogComponent>);
-
-  @Input() title = '';
-  @Input() message = '';
-  @Input() confirmText = 'Confirmer';
-  @Input() cancelText = 'Annuler';
-
-  confirm(): void {
-    this.dialogRef.close(true);
-  }
-
-  cancel(): void {
-    this.dialogRef.close(false);
-  }
+  constructor(
+    public readonly dialogRef: MatDialogRef<ConfirmDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public readonly data: ConfirmDialogData
+  ) {}
 }

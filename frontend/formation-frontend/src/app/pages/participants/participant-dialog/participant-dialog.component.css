@@ -1,0 +1,6 @@
+@media (max-width: 767px) {
+  .dialog-content {
+    min-width: auto !important;
+    max-width: 100% !important;
+  }
+}

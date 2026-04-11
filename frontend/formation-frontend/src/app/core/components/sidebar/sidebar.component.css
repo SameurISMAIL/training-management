@@ -1,53 +1,107 @@
 .sidebar {
   width: 260px;
   height: 100%;
+  background: #fff;
+  border-right: 1px solid #e8eaf6;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 14px 10px;
-  background: #fff;
 }
 
-.sidebar-header {
+.sidebar-top {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
+  gap: 12px;
+  padding: 20px;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+.logo-icon {
+  color: var(--primary);
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+}
+
+.logo-text {
   font-weight: 700;
-  color: var(--primary-color);
+  color: var(--text-primary);
 }
 
 .nav-section-title {
-  padding: 4px 10px;
+  padding: 16px 20px 6px;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--muted-text);
+  color: #999;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
 }
 
 .nav-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
 }
 
 .nav-link {
-  width: 100%;
-  justify-content: flex-start;
-  border-radius: 10px;
-  min-height: 42px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding: 12px 20px;
+  border-radius: 0;
+  width: 100%;
+  color: #555;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+  cursor: pointer;
+  text-decoration: none;
   border-left: 3px solid transparent;
 }
 
 .nav-link.active-link {
-  background: var(--primary-color);
-  color: #fff;
-  border-left-color: var(--accent-color);
+  border-left: 3px solid var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 600;
 }
 
 .nav-link.hidden {
   display: none;
+}
+
+.sidebar-user {
+  margin-top: auto;
+  padding: 16px 20px;
+  border-top: 1px solid #f0f2f5;
+  background: #f8f9ff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.user-role {
+  font-size: 12px;
+  color: var(--text-secondary);
 }

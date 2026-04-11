@@ -1,0 +1,59 @@
+<div class="dialog-header">
+  <div style="display:flex;align-items:center;gap:10px">
+    <mat-icon>group</mat-icon>
+    <h2>{{ data.mode === 'create' ? 'Nouveau Participant' : 'Modifier Participant' }}</h2>
+  </div>
+  <button mat-icon-button (click)="onCancel()">
+    <mat-icon style="color:white">close</mat-icon>
+  </button>
+</div>
+<mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+<div class="dialog-content" style="min-width:560px;max-width:640px">
+  <form [formGroup]="form">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <mat-form-field appearance="outline">
+        <mat-label>Nom</mat-label>
+        <input matInput formControlName="nom">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Prénom</mat-label>
+        <input matInput formControlName="prenom">
+      </mat-form-field>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Téléphone</mat-label>
+        <input matInput formControlName="tel">
+      </mat-form-field>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <mat-form-field appearance="outline">
+        <mat-label>Structure</mat-label>
+        <mat-select formControlName="idStructure">
+          <mat-option *ngFor="let s of structures" [value]="s.id">{{ s.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Profil</mat-label>
+        <mat-select formControlName="idProfil">
+          <mat-option *ngFor="let p of profils" [value]="p.id">{{ p.libelle }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </form>
+</div>
+<div class="dialog-actions">
+  <button mat-stroked-button (click)="onCancel()">
+    <mat-icon>cancel</mat-icon> Annuler
+  </button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid || loading">
+    <mat-icon>save</mat-icon>
+    {{ data.mode === 'create' ? 'Créer' : 'Enregistrer' }}
+  </button>
+</div>

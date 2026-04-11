@@ -1,0 +1,60 @@
+<div class="dialog-header">
+  <div style="display:flex;align-items:center;gap:10px">
+    <mat-icon>person_outline</mat-icon>
+    <h2>{{ data.mode === 'create' ? 'Nouveau Formateur' : 'Modifier Formateur' }}</h2>
+  </div>
+  <button mat-icon-button (click)="onCancel()">
+    <mat-icon style="color:white">close</mat-icon>
+  </button>
+</div>
+<mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+<div class="dialog-content" style="min-width:560px;max-width:640px">
+  <form [formGroup]="form">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <mat-form-field appearance="outline">
+        <mat-label>Nom</mat-label>
+        <input matInput formControlName="nom">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Prénom</mat-label>
+        <input matInput formControlName="prenom">
+      </mat-form-field>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Téléphone</mat-label>
+        <input matInput formControlName="tel">
+      </mat-form-field>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option value="interne">Interne</mat-option>
+          <mat-option value="externe">Externe</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Employeur</mat-label>
+        <mat-select formControlName="idEmployeur">
+          <mat-option *ngFor="let e of employeurs" [value]="e.id">{{ e.nomEmployeur }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </form>
+</div>
+<div class="dialog-actions">
+  <button mat-stroked-button (click)="onCancel()">
+    <mat-icon>cancel</mat-icon> Annuler
+  </button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid || loading">
+    <mat-icon>save</mat-icon>
+    {{ data.mode === 'create' ? 'Créer' : 'Enregistrer' }}
+  </button>
+</div>

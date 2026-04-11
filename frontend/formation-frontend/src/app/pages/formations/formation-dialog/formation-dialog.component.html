@@ -1,0 +1,82 @@
+<div class="dialog-header">
+  <div style="display:flex;align-items:center;gap:10px">
+    <mat-icon>school</mat-icon>
+    <h2>{{ data.mode === 'create' ? 'Nouvelle Formation' : 'Modifier Formation' }}</h2>
+  </div>
+  <button mat-icon-button (click)="onCancel()">
+    <mat-icon style="color:white">close</mat-icon>
+  </button>
+</div>
+<mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+<div class="dialog-content" style="min-width:560px;max-width:640px">
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline" style="width:100%">
+      <mat-label>Titre de la formation</mat-label>
+      <mat-icon matPrefix>title</mat-icon>
+      <input matInput formControlName="titre" placeholder="Ex: Formation Angular">
+      <mat-error *ngIf="form.get('titre')?.hasError('required')">Titre requis</mat-error>
+    </mat-form-field>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <mat-form-field appearance="outline">
+        <mat-label>Année</mat-label>
+        <mat-icon matPrefix>calendar_today</mat-icon>
+        <input matInput type="number" formControlName="annee">
+        <mat-error>Année entre 2000 et 2100</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Durée (jours)</mat-label>
+        <mat-icon matPrefix>schedule</mat-icon>
+        <input matInput type="number" formControlName="duree">
+        <mat-error>Minimum 1 jour</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <mat-form-field appearance="outline">
+        <mat-label>Budget (TND)</mat-label>
+        <mat-icon matPrefix>payments</mat-icon>
+        <input matInput type="number" formControlName="budget">
+        <mat-error>Budget invalide</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Domaine</mat-label>
+        <mat-icon matPrefix>category</mat-icon>
+        <mat-select formControlName="idDomaine">
+          <mat-option *ngFor="let d of data.domaines" [value]="d.id">{{ d.libelle }}</mat-option>
+        </mat-select>
+        <mat-error>Domaine requis</mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" style="width:100%">
+      <mat-label>Formateur</mat-label>
+      <mat-icon matPrefix>person_outline</mat-icon>
+      <mat-select formControlName="idFormateur">
+        <mat-option *ngFor="let f of data.formateurs" [value]="f.id">
+          {{ f.nom }} {{ f.prenom }}
+        </mat-option>
+      </mat-select>
+      <mat-error>Formateur requis</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width:100%">
+      <mat-label>Participants</mat-label>
+      <mat-icon matPrefix>group</mat-icon>
+      <mat-select formControlName="participantIds" multiple>
+        <mat-option *ngFor="let p of data.participants" [value]="p.id">
+          {{ p.nom }} {{ p.prenom }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</div>
+<div class="dialog-actions">
+  <button mat-stroked-button (click)="onCancel()">
+    <mat-icon>cancel</mat-icon> Annuler
+  </button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid || loading">
+    <mat-icon>save</mat-icon>
+    {{ data.mode === 'create' ? 'Créer' : 'Enregistrer' }}
+  </button>
+</div>

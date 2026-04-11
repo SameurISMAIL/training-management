@@ -1,35 +1,33 @@
 <div class="login-wrapper">
-	<mat-card class="login-form">
-		<div class="logo-wrap">
-			<mat-icon>school</mat-icon>
-			<h1>Connexion</h1>
-			<p>Excellent Training</p>
+	<div class="login-card">
+		<div class="login-header">
+			<div class="login-logo">
+				<mat-icon>school</mat-icon>
+			</div>
+			<h1>Excellent Training</h1>
+			<p>Plateforme de gestion des formations</p>
 		</div>
-
-		<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-fields">
-
-			<mat-form-field appearance="outline" class="full-width">
-				<mat-label>Login</mat-label>
-				<input matInput formControlName="login" />
-				<mat-error *ngIf="loginControl.hasError('required') && (loginControl.touched || loginControl.dirty)">
-					Le login est obligatoire.
-				</mat-error>
+		<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+			<mat-form-field appearance="outline">
+				<mat-label>Identifiant</mat-label>
+				<mat-icon matPrefix>person</mat-icon>
+				<input matInput formControlName="login" placeholder="Votre identifiant">
+				<mat-error>L'identifiant est requis</mat-error>
 			</mat-form-field>
-
-			<mat-form-field appearance="outline" class="full-width">
+			<mat-form-field appearance="outline">
 				<mat-label>Mot de passe</mat-label>
-				<input matInput type="password" formControlName="password" />
-				<mat-error *ngIf="passwordControl.hasError('required') && (passwordControl.touched || passwordControl.dirty)">
-					Le mot de passe est obligatoire.
-				</mat-error>
-				<mat-error *ngIf="passwordControl.hasError('minlength') && (passwordControl.touched || passwordControl.dirty)">
-					Le mot de passe doit contenir au moins 4 caracteres.
-				</mat-error>
+				<mat-icon matPrefix>lock</mat-icon>
+				<input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
+				<button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+					<mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+				</button>
+				<mat-error>Minimum 4 caractères</mat-error>
 			</mat-form-field>
-
-			<button mat-raised-button color="primary" type="submit" [disabled]="isSubmitting" class="login-btn">
-				{{ isSubmitting ? 'Connexion...' : 'Se connecter' }}
+			<button mat-raised-button color="primary" type="submit" [disabled]="loading" class="login-btn">
+				<mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+				<mat-icon *ngIf="!loading">login</mat-icon>
+				{{ loading ? 'Connexion...' : 'Se connecter' }}
 			</button>
 		</form>
-	</mat-card>
+	</div>
 </div>

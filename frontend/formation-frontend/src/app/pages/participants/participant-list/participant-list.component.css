@@ -1,16 +1,15 @@
+.search-field {
+  width: 360px;
+  margin-bottom: 16px;
+}
 
-.filters-row {
-  padding: 14px;
+.full-table {
+  width: 100%;
 }
 
 .loading-container {
-  min-height: 240px;
+  min-height: 220px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.actions-cell {
-  display: flex;
-  gap: 8px;
 }

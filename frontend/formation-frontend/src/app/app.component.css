@@ -1,30 +1,12 @@
-:host {
-	display: block;
-	min-height: 100vh;
-	background: var(--page-bg);
-}
-
-.app-shell {
-	min-height: 100vh;
-}
-
 .app-sidenav {
 	width: 260px;
-	border-right: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.app-content {
-	display: flex;
-	flex-direction: column;
-	min-height: 100vh;
+mat-sidenav-container {
+	height: 100vh;
+	background: #f0f2f5;
 }
 
-.content-wrapper {
-	flex: 1;
-}
-
-@media (max-width: 767px) {
-	.content-wrapper {
-		min-height: calc(100vh - 64px);
-	}
+.main-content {
+	padding: 0;
 }

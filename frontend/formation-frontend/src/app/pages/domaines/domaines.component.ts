@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { Domaine } from '../../core/models/domaine.model';
@@ -23,7 +24,6 @@ import { DomaineService } from '../../core/services/domaine.service';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     MatCardModule,
     MatTableModule,
     MatPaginatorModule,
@@ -34,7 +34,8 @@ import { DomaineService } from '../../core/services/domaine.service';
     MatIconModule,
     MatProgressSpinnerModule,
     MatDialogModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatTooltipModule
   ],
   templateUrl: './domaines.component.html',
   styleUrl: './domaines.component.css'
@@ -44,18 +45,12 @@ export class DomainesComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<Domaine>([]);
   loading = false;
   editingId: number | null = null;
-  editingLibelle = '';
+  currentLibelle = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  @ViewChild('createInput') createInput?: ElementRef<HTMLInputElement>;
-
-  createForm = this.fb.group({
-    libelle: ['', Validators.required]
-  });
 
   constructor(
-    private readonly fb: FormBuilder,
     private readonly domaineService: DomaineService,
     private readonly dialog: MatDialog,
     private readonly snackBar: MatSnackBar
@@ -73,10 +68,6 @@ export class DomainesComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-  }
-
-  get libelleControl() {
-    return this.createForm.controls.libelle;
   }
 
   loadDomaines(): void {
@@ -100,75 +91,59 @@ export class DomainesComponent implements OnInit, AfterViewInit {
 
   startEdit(domaine: Domaine): void {
     this.editingId = domaine.id;
-    this.editingLibelle = domaine.libelle;
+    this.currentLibelle = domaine.libelle;
   }
 
   cancelEdit(): void {
     this.editingId = null;
-    this.editingLibelle = '';
+    this.currentLibelle = '';
   }
 
-  saveEdit(domaine: Domaine): void {
-    const payload: Domaine = {
-      id: domaine.id,
-      libelle: this.editingLibelle.trim()
-    };
+  save(): void {
+    const trimmed = this.currentLibelle.trim();
 
-    if (!payload.libelle) {
+    if (!trimmed) {
       this.snackBar.open('Le libellé est obligatoire', 'Fermer', {
-        duration: 3000,
-        horizontalPosition: 'center',
-        verticalPosition: 'top'
+        duration: 4000,
+        panelClass: ['error-snack']
       });
       return;
     }
 
-    this.domaineService.update(domaine.id, payload).subscribe({
-      next: () => {
-        this.snackBar.open('Domaine modifié avec succès', 'Fermer', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
-        });
-        this.cancelEdit();
-        this.loadDomaines();
-      },
-      error: () => {
-        this.snackBar.open('Erreur lors de la modification du domaine', 'Fermer', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
-        });
-      }
-    });
-  }
-
-  onSubmit(): void {
-    if (this.createForm.invalid) {
-      this.createForm.markAllAsTouched();
+    if (this.editingId) {
+      const payload: Domaine = { id: this.editingId, libelle: trimmed };
+      this.domaineService.update(this.editingId, payload).subscribe({
+        next: () => {
+          this.snackBar.open('Domaine modifié avec succès', 'Fermer', {
+            duration: 3000,
+            panelClass: ['success-snack']
+          });
+          this.cancelEdit();
+          this.loadDomaines();
+        },
+        error: () => {
+          this.snackBar.open('Erreur lors de la modification du domaine', 'Fermer', {
+            duration: 4000,
+            panelClass: ['error-snack']
+          });
+        }
+      });
       return;
     }
 
-    const payload: Domaine = {
-      id: 0,
-      libelle: (this.libelleControl.value ?? '').trim()
-    };
-
-    this.domaineService.create(payload).subscribe({
+    this.domaineService.create({ id: 0, libelle: trimmed }).subscribe({
       next: () => {
         this.snackBar.open('Domaine créé avec succès', 'Fermer', {
           duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
+          panelClass: ['success-snack']
         });
-        this.createForm.reset();
+        this.currentLibelle = '';
         this.loadDomaines();
       },
       error: () => {
         this.snackBar.open('Erreur lors de la création du domaine', 'Fermer', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
+          duration: 4000,
+          panelClass: ['error-snack']
         });
       }
     });
@@ -176,14 +151,14 @@ export class DomainesComponent implements OnInit, AfterViewInit {
 
   openDeleteDialog(domaine: Domaine): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '360px',
-      disableClose: true
+      width: '680px',
+      panelClass: 'custom-dialog',
+      disableClose: true,
+      data: {
+        title: 'Supprimer le domaine',
+        message: `Voulez-vous vraiment supprimer le domaine "${domaine.libelle}" ?`
+      }
     });
-
-    dialogRef.componentInstance.title = 'Supprimer le domaine';
-    dialogRef.componentInstance.message = `Voulez-vous vraiment supprimer le domaine "${domaine.libelle}" ?`;
-    dialogRef.componentInstance.confirmText = 'Supprimer';
-    dialogRef.componentInstance.cancelText = 'Annuler';
 
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
@@ -191,25 +166,18 @@ export class DomainesComponent implements OnInit, AfterViewInit {
           next: () => {
             this.snackBar.open('Domaine supprimé avec succès', 'Fermer', {
               duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top'
+              panelClass: ['success-snack']
             });
             this.loadDomaines();
           },
           error: () => {
             this.snackBar.open('Erreur lors de la suppression du domaine', 'Fermer', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top'
+              duration: 4000,
+              panelClass: ['error-snack']
             });
           }
         });
       }
     });
-  }
-
-  focusCreateForm(): void {
-    this.createInput?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    this.createInput?.nativeElement.focus();
   }
 }

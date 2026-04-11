@@ -1,0 +1,59 @@
+<div class="dialog-header">
+  <div style="display:flex;align-items:center;gap:10px">
+    <mat-icon>person_add</mat-icon>
+    <h2>Nouvel utilisateur</h2>
+  </div>
+  <button mat-icon-button (click)="onCancel()">
+    <mat-icon style="color:white">close</mat-icon>
+  </button>
+</div>
+
+<div class="dialog-content" style="min-width:480px;max-width:540px">
+  <form [formGroup]="form">
+
+    <mat-form-field appearance="outline" style="width:100%">
+      <mat-label>Login</mat-label>
+      <input matInput formControlName="login" autocomplete="username" placeholder="ex: admin.formation">
+      <mat-hint>Minimum 3 caracteres</mat-hint>
+      <mat-error *ngIf="form.controls.login.hasError('required')">Le login est obligatoire.</mat-error>
+      <mat-error *ngIf="form.controls.login.hasError('minlength')">Minimum 3 caracteres.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width:100%;margin-top:8px">
+      <mat-label>Mot de passe</mat-label>
+      <input
+        matInput
+        formControlName="password"
+        [type]="hidePassword ? 'password' : 'text'"
+        autocomplete="new-password"
+        placeholder="Minimum 4 caracteres">
+      <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
+        <mat-icon>{{ hidePassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+      </button>
+      <mat-error *ngIf="form.controls.password.hasError('required')">Le mot de passe est obligatoire.</mat-error>
+      <mat-error *ngIf="form.controls.password.hasError('minlength')">Minimum 4 caracteres.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width:100%;margin-top:8px">
+      <mat-label>Role</mat-label>
+      <mat-select formControlName="role">
+        <mat-option value="administrateur">Administrateur</mat-option>
+        <mat-option value="responsable">Responsable</mat-option>
+        <mat-option value="simple utilisateur">Simple utilisateur</mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.controls.role.hasError('required')">Le role est obligatoire.</mat-error>
+    </mat-form-field>
+
+  </form>
+</div>
+
+<div class="dialog-actions">
+  <button mat-stroked-button (click)="onCancel()">
+    <mat-icon>close</mat-icon>
+    Annuler
+  </button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">
+    <mat-icon>save</mat-icon>
+    Creer
+  </button>
+</div>

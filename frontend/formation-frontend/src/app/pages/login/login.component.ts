@@ -6,8 +6,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { AuthService } from '../../core/services/auth.service';
 
@@ -20,20 +20,21 @@ import { AuthService } from '../../core/services/auth.service';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatCardModule,
     MatIconModule,
+    MatProgressSpinnerModule,
     MatSnackBarModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
+  hidePassword = true;
   loginForm = this.fb.nonNullable.group({
     login: ['', Validators.required],
     password: ['', [Validators.required, Validators.minLength(4)]]
   });
 
-  isSubmitting = false;
+  loading = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -56,20 +57,19 @@ export class LoginComponent {
       return;
     }
 
-    this.isSubmitting = true;
+    this.loading = true;
     const { login, password } = this.loginForm.getRawValue();
 
     this.authService.login(login, password).subscribe({
       next: () => {
-        this.isSubmitting = false;
+        this.loading = false;
         this.router.navigate(['/dashboard']);
       },
       error: () => {
-        this.isSubmitting = false;
+        this.loading = false;
         this.snackBar.open('Identifiants incorrects', 'Fermer', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
+          duration: 4000,
+          panelClass: ['error-snack']
         });
       }
     });

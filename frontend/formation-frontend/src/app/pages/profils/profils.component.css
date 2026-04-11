@@ -1,55 +1,36 @@
 .admin-layout {
   display: grid;
-  grid-template-columns: 7fr 3fr;
-  gap: 16px;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
   align-items: start;
 }
 
-.table-card,
-.create-card {
-  padding: 16px;
+.table-card {
   border-radius: 12px;
-  box-shadow: var(--card-shadow);
 }
 
-.loading-container {
-  min-height: 240px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.form-card {
+  border-radius: 12px;
+  position: sticky;
+  top: 88px;
 }
 
-.actions-cell {
+.form-card mat-card-header {
+  background: var(--primary-light);
+  border-radius: 12px 12px 0 0;
+  padding: 16px 20px;
+}
+
+.form-card mat-card-title {
   display: flex;
   align-items: center;
   gap: 8px;
+  color: var(--primary);
+  font-size: 16px;
 }
 
-.inline-edit-field {
+.search-field {
   width: 100%;
-  max-width: 320px;
-}
-
-.create-card {
-  display: grid;
-  gap: 16px;
-  position: sticky;
-  top: 84px;
-}
-
-.create-form {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.create-form mat-form-field {
-  width: 100%;
-}
-
-.editing-row {
-  background: var(--edit-highlight);
 }
 
 @media (max-width: 991px) {
@@ -57,7 +38,7 @@
     grid-template-columns: 1fr;
   }
 
-  .create-card {
+  .form-card {
     position: static;
   }
 }

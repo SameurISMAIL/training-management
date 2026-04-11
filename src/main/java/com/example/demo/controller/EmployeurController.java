@@ -25,7 +25,7 @@ public class EmployeurController {
 
     private final EmployeurService employeurService;
 
-    @GetMapping("/")
+    @GetMapping({"", "/"})
     public ResponseEntity<List<Employeur>> getAllEmployeurs() {
         return ResponseEntity.ok(employeurService.getAllEmployeurs());
     }
@@ -35,7 +35,7 @@ public class EmployeurController {
         return ResponseEntity.ok(employeurService.getEmployeurById(id));
     }
 
-    @PostMapping("/")
+    @PostMapping({"", "/"})
     public ResponseEntity<Employeur> createEmployeur(@Valid @RequestBody Employeur employeur) {
         Employeur created = employeurService.createEmployeur(employeur);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);

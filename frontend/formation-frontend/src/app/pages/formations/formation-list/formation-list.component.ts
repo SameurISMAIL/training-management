@@ -1,13 +1,13 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -15,8 +15,15 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+import { Domaine } from '../../../core/models/domaine.model';
+import { Formateur } from '../../../core/models/formateur.model';
 import { Formation } from '../../../core/models/formation.model';
+import { Participant } from '../../../core/models/participant.model';
+import { DomaineService } from '../../../core/services/domaine.service';
+import { FormateurService } from '../../../core/services/formateur.service';
 import { FormationService } from '../../../core/services/formation.service';
+import { ParticipantService } from '../../../core/services/participant.service';
+import { FormationDialogComponent } from '../formation-dialog/formation-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
@@ -31,7 +38,6 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
     MatSortModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
@@ -46,19 +52,21 @@ export class FormationListComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['titre', 'annee', 'duree', 'domaine', 'budget', 'actions'];
   dataSource = new MatTableDataSource<Formation>([]);
   loading = false;
-  selectedYear: number | null = null;
-  availableYears: number[] = [];
-  totalBudget = 0;
-  allFormations: Formation[] = [];
+  formations: Formation[] = [];
+  allDomaines: Domaine[] = [];
+  allFormateurs: Formateur[] = [];
+  allParticipants: Participant[] = [];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private readonly formationService: FormationService,
+    private readonly domaineService: DomaineService,
+    private readonly formateurService: FormateurService,
+    private readonly participantService: ParticipantService,
     private readonly dialog: MatDialog,
-    private readonly snackBar: MatSnackBar,
-    private readonly router: Router
+    private readonly snackBar: MatSnackBar
   ) {
     this.dataSource.filterPredicate = (data, filter) => {
       const search = filter.trim().toLowerCase();
@@ -88,27 +96,26 @@ export class FormationListComponent implements OnInit, AfterViewInit {
 
   loadFormations(): void {
     this.loading = true;
-    this.formationService.getAllFormations().subscribe({
-      next: (formations) => {
-        this.allFormations = formations;
-        this.availableYears = [...new Set(formations.map((item) => item.annee))].sort((a, b) => b - a);
-        this.applyYearFilter();
+    forkJoin([
+      this.formationService.getAllFormations(),
+      this.domaineService.getAll(),
+      this.formateurService.getAll(),
+      this.participantService.getAll()
+    ]).subscribe({
+      next: ([formations, domaines, formateurs, participants]) => {
+        this.formations = formations;
+        this.dataSource.data = formations;
+        this.allDomaines = domaines;
+        this.allFormateurs = formateurs;
+        this.allParticipants = participants;
         this.loading = false;
       },
       error: () => {
-        this.allFormations = [];
+        this.formations = [];
         this.dataSource.data = [];
-        this.totalBudget = 0;
         this.loading = false;
       }
     });
-  }
-
-  applyYearFilter(): void {
-    const filtered = this.selectedYear ? this.allFormations.filter((item) => item.annee === this.selectedYear) : this.allFormations;
-    this.dataSource.data = filtered;
-    this.totalBudget = filtered.reduce((sum, item) => sum + item.budget, 0);
-    this.dataSource.paginator?.firstPage();
   }
 
   applyFilter(event: Event): void {
@@ -120,36 +127,108 @@ export class FormationListComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getFormateurName(formation: Formation): string {
-    return `${formation.formateur?.nom ?? ''} ${formation.formateur?.prenom ?? ''}`.trim();
-  }
-
-  openDeleteDialog(formation: Formation): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '360px',
-      disableClose: true
+  openCreateDialog(): void {
+    const dialogRef = this.dialog.open(FormationDialogComponent, {
+      width: '680px',
+      panelClass: 'custom-dialog',
+      disableClose: true,
+      data: {
+        mode: 'create',
+        domaines: this.allDomaines,
+        formateurs: this.allFormateurs,
+        participants: this.allParticipants
+      }
     });
 
-    dialogRef.componentInstance.title = 'Supprimer la formation';
-    dialogRef.componentInstance.message = `Voulez-vous vraiment supprimer la formation "${formation.titre}" ?`;
-    dialogRef.componentInstance.confirmText = 'Supprimer';
-    dialogRef.componentInstance.cancelText = 'Annuler';
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
+
+      this.formationService.createFormation(result).subscribe({
+        next: () => {
+          this.snackBar.open('Formation créée avec succès', 'Fermer', {
+            duration: 3000,
+            panelClass: ['success-snack']
+          });
+          this.loadFormations();
+        },
+        error: () => {
+          this.snackBar.open('Erreur lors de la création', 'Fermer', {
+            duration: 4000,
+            panelClass: ['error-snack']
+          });
+        }
+      });
+    });
+  }
+
+  openEditDialog(formation: Formation): void {
+    const dialogRef = this.dialog.open(FormationDialogComponent, {
+      width: '680px',
+      panelClass: 'custom-dialog',
+      disableClose: true,
+      data: {
+        mode: 'edit',
+        formation,
+        domaines: this.allDomaines,
+        formateurs: this.allFormateurs,
+        participants: this.allParticipants
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
+
+      this.formationService.updateFormation(formation.id, result).subscribe({
+        next: () => {
+          this.snackBar.open('Formation modifiée avec succès', 'Fermer', {
+            duration: 3000,
+            panelClass: ['success-snack']
+          });
+          this.loadFormations();
+        },
+        error: () => {
+          this.snackBar.open('Erreur lors de la modification', 'Fermer', {
+            duration: 4000,
+            panelClass: ['error-snack']
+          });
+        }
+      });
+    });
+  }
+
+  deleteFormation(id: number): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '680px',
+      panelClass: 'custom-dialog',
+      disableClose: true,
+      data: {
+        title: 'Supprimer la formation',
+        message: 'Voulez-vous vraiment supprimer cette formation ?'
+      }
+    });
 
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
-        this.formationService.deleteFormation(formation.id).subscribe({
+        this.formationService.deleteFormation(id).subscribe({
           next: () => {
-            this.snackBar.open('Formation supprimée', 'Fermer', { duration: 3000 });
+            this.snackBar.open('Formation supprimée', 'Fermer', {
+              duration: 3000,
+              panelClass: ['success-snack']
+            });
             this.loadFormations();
           },
-          error: () => this.loadFormations()
+          error: () => {
+            this.snackBar.open('Erreur lors de la suppression', 'Fermer', {
+              duration: 4000,
+              panelClass: ['error-snack']
+            });
+          }
         });
       }
     });
   }
-
-  openDetail(formation: Formation): void {
-    this.router.navigate(['/formations', formation.id]);
-  }
-
 }

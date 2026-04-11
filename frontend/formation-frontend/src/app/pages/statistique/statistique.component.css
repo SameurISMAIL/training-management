@@ -1,90 +1,75 @@
-.stats-page {
-	display: grid;
-	gap: 24px;
+.stats-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-.loading-container {
-	min-height: 320px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+.summary-card {
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: white;
+  box-shadow: var(--card-shadow);
 }
 
-.cards-grid {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 16px;
+.summary-card.indigo {
+  background: linear-gradient(135deg, #3f51b5, #5c6bc0);
 }
 
-.stat-card {
-	padding: 20px;
-	border-radius: 12px;
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	background: var(--surface-bg);
-	border-left: 4px solid transparent;
+.summary-card.teal {
+  background: linear-gradient(135deg, #009688, #26a69a);
 }
 
-.card-formations {
-	border-left-color: var(--primary-color);
+.summary-card.orange {
+  background: linear-gradient(135deg, #ff9800, #ffa726);
 }
 
-.card-participants {
-	border-left-color: var(--teal-color);
+.summary-card.green {
+  background: linear-gradient(135deg, #4caf50, #66bb6a);
 }
 
-.card-budget {
-	border-left-color: var(--orange-color);
+.summary-card mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  opacity: 0.9;
 }
 
-.card-year {
-	border-left-color: var(--green-color);
+.summary-number {
+  font-size: 28px;
+  font-weight: 700;
+  display: block;
 }
 
-.card-label {
-	font-size: 14px;
-	color: #63708a;
-	text-transform: uppercase;
-	letter-spacing: 0.04em;
-}
-
-.card-value {
-	font-size: 32px;
-	font-weight: 700;
-	color: #1f2937;
+.summary-label {
+  font-size: 13px;
+  opacity: 0.85;
 }
 
 .charts-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-	gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
 
 .chart-card {
-	padding: 20px;
-	border-radius: 12px;
-	min-height: 420px;
-	box-shadow: var(--card-shadow);
+  border-radius: 12px;
 }
 
-.chart-card-wide {
-	grid-column: 1 / -1;
+.chart-card.full-width {
+  grid-column: span 2;
 }
 
-.chart-card h2 {
-	margin: 0 0 16px;
-	font-size: 20px;
-	font-weight: 600;
-}
+@media (max-width: 991px) {
+  .stats-summary-grid,
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
 
-.chart-wrapper {
-	position: relative;
-	height: 320px;
-}
-
-@media (max-width: 767px) {
-	.cards-grid {
-		grid-template-columns: 1fr;
-	}
+  .chart-card.full-width {
+    grid-column: span 1;
+  }
 }

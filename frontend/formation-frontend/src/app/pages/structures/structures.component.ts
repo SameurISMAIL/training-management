@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { Structure } from '../../core/models/structure.model';
 import { StructureService } from '../../core/services/structure.service';
@@ -23,7 +24,6 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     MatCardModule,
     MatTableModule,
     MatPaginatorModule,
@@ -34,7 +34,8 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
     MatIconModule,
     MatProgressSpinnerModule,
     MatDialogModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatTooltipModule
   ],
   templateUrl: './structures.component.html',
   styleUrl: './structures.component.css'
@@ -44,18 +45,12 @@ export class StructuresComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<Structure>([]);
   loading = false;
   editingId: number | null = null;
-  editingLibelle = '';
+  currentLibelle = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  @ViewChild('createInput') createInput?: ElementRef<HTMLInputElement>;
-
-  createForm = this.fb.group({
-    libelle: ['', Validators.required]
-  });
 
   constructor(
-    private readonly fb: FormBuilder,
     private readonly structureService: StructureService,
     private readonly dialog: MatDialog,
     private readonly snackBar: MatSnackBar
@@ -73,10 +68,6 @@ export class StructuresComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-  }
-
-  get libelleControl() {
-    return this.createForm.controls.libelle;
   }
 
   loadStructures(): void {
@@ -100,75 +91,59 @@ export class StructuresComponent implements OnInit, AfterViewInit {
 
   startEdit(structure: Structure): void {
     this.editingId = structure.id;
-    this.editingLibelle = structure.libelle;
+    this.currentLibelle = structure.libelle;
   }
 
   cancelEdit(): void {
     this.editingId = null;
-    this.editingLibelle = '';
+    this.currentLibelle = '';
   }
 
-  saveEdit(structure: Structure): void {
-    const payload: Structure = {
-      id: structure.id,
-      libelle: this.editingLibelle.trim()
-    };
+  save(): void {
+    const trimmed = this.currentLibelle.trim();
 
-    if (!payload.libelle) {
+    if (!trimmed) {
       this.snackBar.open('Le libellé est obligatoire', 'Fermer', {
-        duration: 3000,
-        horizontalPosition: 'center',
-        verticalPosition: 'top'
+        duration: 4000,
+        panelClass: ['error-snack']
       });
       return;
     }
 
-    this.structureService.update(structure.id, payload).subscribe({
-      next: () => {
-        this.snackBar.open('Structure modifiée avec succès', 'Fermer', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
-        });
-        this.cancelEdit();
-        this.loadStructures();
-      },
-      error: () => {
-        this.snackBar.open('Erreur lors de la modification de la structure', 'Fermer', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
-        });
-      }
-    });
-  }
-
-  onSubmit(): void {
-    if (this.createForm.invalid) {
-      this.createForm.markAllAsTouched();
+    if (this.editingId) {
+      const payload: Structure = { id: this.editingId, libelle: trimmed };
+      this.structureService.update(this.editingId, payload).subscribe({
+        next: () => {
+          this.snackBar.open('Structure modifiée avec succès', 'Fermer', {
+            duration: 3000,
+            panelClass: ['success-snack']
+          });
+          this.cancelEdit();
+          this.loadStructures();
+        },
+        error: () => {
+          this.snackBar.open('Erreur lors de la modification de la structure', 'Fermer', {
+            duration: 4000,
+            panelClass: ['error-snack']
+          });
+        }
+      });
       return;
     }
 
-    const payload: Structure = {
-      id: 0,
-      libelle: (this.libelleControl.value ?? '').trim()
-    };
-
-    this.structureService.create(payload).subscribe({
+    this.structureService.create({ id: 0, libelle: trimmed }).subscribe({
       next: () => {
         this.snackBar.open('Structure créée avec succès', 'Fermer', {
           duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
+          panelClass: ['success-snack']
         });
-        this.createForm.reset();
+        this.currentLibelle = '';
         this.loadStructures();
       },
       error: () => {
         this.snackBar.open('Erreur lors de la création de la structure', 'Fermer', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
+          duration: 4000,
+          panelClass: ['error-snack']
         });
       }
     });
@@ -176,14 +151,14 @@ export class StructuresComponent implements OnInit, AfterViewInit {
 
   openDeleteDialog(structure: Structure): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '360px',
-      disableClose: true
+      width: '680px',
+      panelClass: 'custom-dialog',
+      disableClose: true,
+      data: {
+        title: 'Supprimer la structure',
+        message: `Voulez-vous vraiment supprimer la structure "${structure.libelle}" ?`
+      }
     });
-
-    dialogRef.componentInstance.title = 'Supprimer la structure';
-    dialogRef.componentInstance.message = `Voulez-vous vraiment supprimer la structure "${structure.libelle}" ?`;
-    dialogRef.componentInstance.confirmText = 'Supprimer';
-    dialogRef.componentInstance.cancelText = 'Annuler';
 
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
@@ -191,25 +166,18 @@ export class StructuresComponent implements OnInit, AfterViewInit {
           next: () => {
             this.snackBar.open('Structure supprimée avec succès', 'Fermer', {
               duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top'
+              panelClass: ['success-snack']
             });
             this.loadStructures();
           },
           error: () => {
             this.snackBar.open('Erreur lors de la suppression de la structure', 'Fermer', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top'
+              duration: 4000,
+              panelClass: ['error-snack']
             });
           }
         });
       }
     });
-  }
-
-  focusCreateForm(): void {
-    this.createInput?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    this.createInput?.nativeElement.focus();
   }
 }

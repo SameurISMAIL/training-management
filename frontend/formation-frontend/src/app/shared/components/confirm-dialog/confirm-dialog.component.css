@@ -1,7 +1,41 @@
-:host {
-  display: block;
+.confirm-dialog-container {
+  text-align: center;
+  padding: 32px 40px;
 }
 
-mat-dialog-content {
-  min-width: 280px;
+.confirm-icon-wrapper {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #fff3e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.confirm-icon {
+  color: #ff9800;
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+}
+
+.confirm-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 12px;
+}
+
+.confirm-message {
+  color: #666;
+  margin: 0 0 28px;
+  line-height: 1.6;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
 }

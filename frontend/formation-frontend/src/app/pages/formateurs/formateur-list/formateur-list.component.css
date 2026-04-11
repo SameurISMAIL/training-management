@@ -1,30 +1,15 @@
+.search-field {
+  width: 360px;
+  margin-bottom: 16px;
+}
+
+.full-table {
+  width: 100%;
+}
+
 .loading-container {
-  min-height: 240px;
+  min-height: 220px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.filters-row {
-  padding: 14px;
-}
-
-.actions-cell {
-  display: flex;
-  gap: 8px;
-}
-
-.type-chip {
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
-.type-chip-interne {
-  background: var(--chip-interne-bg);
-  color: var(--green-color);
-}
-
-.type-chip-externe {
-  background: var(--chip-externe-bg);
-  color: var(--orange-color);
 }
