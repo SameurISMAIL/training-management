@@ -42,9 +42,10 @@
 }
 
 .nav-link {
-  display: flex;
+  display: grid;
+  grid-template-columns: 24px 1fr;
   align-items: center;
-  gap: 12px;
+  column-gap: 12px;
   padding: 12px 20px;
   border-radius: 0;
   width: 100%;
@@ -55,6 +56,23 @@
   cursor: pointer;
   text-decoration: none;
   border-left: 3px solid transparent;
+  box-sizing: border-box;
+}
+
+.nav-link mat-icon {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  font-size: 20px;
+  line-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-link span {
+  line-height: 24px;
+  justify-self: start;
 }
 
 .nav-link.active-link {

@@ -27,9 +27,10 @@ export class SidebarComponent {
   @Output() navigate = new EventEmitter<void>();
 
   mainNavItems: NavItem[] = [
-    { label: 'Formations', route: '/formations', icon: 'school' },
-    { label: 'Formateurs', route: '/formateurs', icon: 'person_outline' },
-    { label: 'Participants', route: '/participants', icon: 'group' },
+    { label: 'Dashboard', route: '/dashboard', icon: 'dashboard', roles: ['ROLE_ADMIN', 'ADMIN', 'administrateur', 'ROLE_RESPONSABLE', 'RESPONSABLE', 'responsable', 'ROLE_USER', 'USER', 'simple utilisateur', 'utilisateur'] },
+    { label: 'Formations', route: '/formations', icon: 'school', roles: ['ROLE_ADMIN', 'ADMIN', 'administrateur', 'ROLE_USER', 'USER', 'simple utilisateur', 'utilisateur'] },
+    { label: 'Formateurs', route: '/formateurs', icon: 'person_outline', roles: ['ROLE_ADMIN', 'ADMIN', 'administrateur', 'ROLE_USER', 'USER', 'simple utilisateur', 'utilisateur'] },
+    { label: 'Participants', route: '/participants', icon: 'group', roles: ['ROLE_ADMIN', 'ADMIN', 'administrateur', 'ROLE_USER', 'USER', 'simple utilisateur', 'utilisateur'] },
     { label: 'Statistiques', route: '/statistiques', icon: 'bar_chart', roles: ['ROLE_RESPONSABLE', 'RESPONSABLE', 'ROLE_ADMIN', 'ADMIN'] },
   ];
 

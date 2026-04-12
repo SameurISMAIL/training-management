@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -41,14 +41,16 @@ import { DomaineService } from '../../core/services/domaine.service';
   styleUrl: './domaines.component.css'
 })
 export class DomainesComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['id', 'libelle', 'actions'];
+  displayedColumns: string[] = ['libelle', 'actions'];
   dataSource = new MatTableDataSource<Domaine>([]);
   loading = false;
   editingId: number | null = null;
   currentLibelle = '';
+  private formDialogRef: MatDialogRef<unknown> | null = null;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild('formDialog') formDialog!: TemplateRef<unknown>;
 
   constructor(
     private readonly domaineService: DomaineService,
@@ -89,9 +91,30 @@ export class DomainesComponent implements OnInit, AfterViewInit {
     this.dataSource.paginator?.firstPage();
   }
 
+  openCreateDialog(): void {
+    this.editingId = null;
+    this.currentLibelle = '';
+    this.formDialogRef = this.dialog.open(this.formDialog, {
+      width: '520px',
+      panelClass: 'custom-dialog',
+      disableClose: true
+    });
+  }
+
   startEdit(domaine: Domaine): void {
     this.editingId = domaine.id;
     this.currentLibelle = domaine.libelle;
+    this.formDialogRef = this.dialog.open(this.formDialog, {
+      width: '520px',
+      panelClass: 'custom-dialog',
+      disableClose: true
+    });
+  }
+
+  closeFormDialog(): void {
+    this.formDialogRef?.close();
+    this.formDialogRef = null;
+    this.cancelEdit();
   }
 
   cancelEdit(): void {
@@ -118,7 +141,7 @@ export class DomainesComponent implements OnInit, AfterViewInit {
             duration: 3000,
             panelClass: ['success-snack']
           });
-          this.cancelEdit();
+          this.closeFormDialog();
           this.loadDomaines();
         },
         error: () => {
@@ -137,7 +160,7 @@ export class DomainesComponent implements OnInit, AfterViewInit {
           duration: 3000,
           panelClass: ['success-snack']
         });
-        this.currentLibelle = '';
+        this.closeFormDialog();
         this.loadDomaines();
       },
       error: () => {

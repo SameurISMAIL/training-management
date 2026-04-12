@@ -16,42 +16,38 @@
 				<span class="stat-label">Formations</span>
 			</div>
 		</div>
-		<div class="stat-card teal" routerLink="/formateurs">
-			<div class="stat-icon"><mat-icon>person_outline</mat-icon></div>
+		<div class="stat-card teal" routerLink="/statistiques">
+			<div class="stat-icon"><mat-icon>category</mat-icon></div>
 			<div class="stat-info">
-				<span class="stat-number">{{ totalFormateurs }}</span>
-				<span class="stat-label">Formateurs</span>
+				<span class="stat-number">{{ totalDomaines }}</span>
+				<span class="stat-label">Domaines</span>
 			</div>
 		</div>
-		<div class="stat-card orange" routerLink="/participants">
+		<div class="stat-card orange" routerLink="/statistiques">
 			<div class="stat-icon"><mat-icon>group</mat-icon></div>
 			<div class="stat-info">
 				<span class="stat-number">{{ totalParticipants }}</span>
 				<span class="stat-label">Participants</span>
 			</div>
 		</div>
+		<div class="stat-card green" routerLink="/statistiques">
+			<div class="stat-icon"><mat-icon>today</mat-icon></div>
+			<div class="stat-info">
+				<span class="stat-number">{{ formationsThisYear }}</span>
+				<span class="stat-label">Cette année</span>
+			</div>
+		</div>
 	</div>
 
 	<mat-card class="recent-card">
-		<mat-card-header>
-			<mat-card-title>
-				<mat-icon>history</mat-icon> Formations récentes
-			</mat-card-title>
-			<a mat-button color="primary" routerLink="/formations">Voir tout</a>
-		</mat-card-header>
 		<mat-card-content>
-			<mat-list>
-				<mat-list-item *ngFor="let f of recentFormations">
-					<mat-icon matListItemIcon>school</mat-icon>
-					<span matListItemTitle>{{ f.titre }}</span>
-					<span matListItemLine>{{ f.annee }} · {{ f.duree }} jours · {{ f.budget | number }} TND</span>
-					<mat-chip>{{ f.domaine?.libelle }}</mat-chip>
-				</mat-list-item>
-				<div *ngIf="recentFormations.length === 0" class="empty-state">
-					<mat-icon>info_outline</mat-icon>
-					<span>Aucune formation enregistrée</span>
+			<div class="dashboard-note">
+				<mat-icon>insights</mat-icon>
+				<div>
+					<strong>Tableau de bord synthétique</strong>
+					<p>Les détails avancés sont disponibles dans la page Statistiques.</p>
 				</div>
-			</mat-list>
+			</div>
 		</mat-card-content>
 	</mat-card>
 </div>

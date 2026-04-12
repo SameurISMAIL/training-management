@@ -16,11 +16,11 @@ import { UnauthorizedComponent } from './pages/unauthorized/unauthorized.compone
 
 export const routes: Routes = [
 	{ path: 'login', component: LoginComponent },
-	{ path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
-	{ path: 'formations', component: FormationListComponent, canActivate: [authGuard] },
-	{ path: 'formations/:id', component: FormationDetailComponent, canActivate: [authGuard] },
-	{ path: 'formateurs', component: FormateurListComponent, canActivate: [authGuard] },
-	{ path: 'participants', component: ParticipantListComponent, canActivate: [authGuard] },
+	{ path: 'dashboard', component: DashboardComponent, canActivate: [roleGuard], data: { roles: ['ROLE_ADMIN', 'ADMIN', 'administrateur', 'ROLE_USER', 'USER', 'simple utilisateur', 'utilisateur'] } },
+	{ path: 'formations', component: FormationListComponent, canActivate: [roleGuard], data: { roles: ['ROLE_ADMIN', 'ADMIN', 'administrateur', 'ROLE_USER', 'USER', 'simple utilisateur', 'utilisateur'] } },
+	{ path: 'formations/:id', component: FormationDetailComponent, canActivate: [roleGuard], data: { roles: ['ROLE_ADMIN', 'ADMIN', 'administrateur', 'ROLE_USER', 'USER', 'simple utilisateur', 'utilisateur'] } },
+	{ path: 'formateurs', component: FormateurListComponent, canActivate: [roleGuard], data: { roles: ['ROLE_ADMIN', 'ADMIN', 'administrateur', 'ROLE_USER', 'USER', 'simple utilisateur', 'utilisateur'] } },
+	{ path: 'participants', component: ParticipantListComponent, canActivate: [roleGuard], data: { roles: ['ROLE_ADMIN', 'ADMIN', 'administrateur', 'ROLE_USER', 'USER', 'simple utilisateur', 'utilisateur'] } },
 	{ path: 'domaines', component: DomainesComponent, canActivate: [roleGuard], data: { roles: ['ROLE_ADMIN', 'ADMIN', 'administrateur'] } },
 	{ path: 'structures', component: StructuresComponent, canActivate: [roleGuard], data: { roles: ['ROLE_ADMIN', 'ADMIN', 'administrateur'] } },
 	{ path: 'profils', component: ProfilsComponent, canActivate: [roleGuard], data: { roles: ['ROLE_ADMIN', 'ADMIN', 'administrateur'] } },

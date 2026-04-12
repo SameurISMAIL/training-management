@@ -44,7 +44,7 @@
 
 .stats-grid {
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
+	grid-template-columns: repeat(4, 1fr);
 	gap: 16px;
 	margin-bottom: 24px;
 }
@@ -76,6 +76,10 @@
 	background: linear-gradient(135deg, #ff9800, #ffb74d);
 }
 
+.stat-card.green {
+	background: linear-gradient(135deg, #4caf50, #66bb6a);
+}
+
 .stat-icon {
 	background: rgba(255, 255, 255, 0.2);
 	border-radius: 12px;
@@ -103,20 +107,19 @@
 	border-radius: 16px;
 }
 
-.recent-card mat-card-header {
+.dashboard-note {
 	display: flex;
-	justify-content: space-between;
 	align-items: center;
+	gap: 14px;
+	padding: 8px 0;
+	color: #4b5563;
 }
 
-.empty-state {
-	text-align: center;
-	padding: 32px;
-	color: #999;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 8px;
+.dashboard-note mat-icon {
+	font-size: 40px;
+	width: 40px;
+	height: 40px;
+	color: #3f51b5;
 }
 
 @media (max-width: 991px) {

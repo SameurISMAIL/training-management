@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -10,9 +10,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { Profil } from '../../core/models/profil.model';
@@ -41,14 +42,16 @@ import { ProfilService } from '../../core/services/profil.service';
   styleUrl: './profils.component.css'
 })
 export class ProfilsComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['id', 'libelle', 'actions'];
+  displayedColumns: string[] = ['libelle', 'actions'];
   dataSource = new MatTableDataSource<Profil>([]);
   loading = false;
   editingId: number | null = null;
   currentLibelle = '';
+  private formDialogRef: MatDialogRef<unknown> | null = null;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild('formDialog') formDialog!: TemplateRef<unknown>;
 
   constructor(
     private readonly profilService: ProfilService,
@@ -89,9 +92,30 @@ export class ProfilsComponent implements OnInit, AfterViewInit {
     this.dataSource.paginator?.firstPage();
   }
 
+  openCreateDialog(): void {
+    this.editingId = null;
+    this.currentLibelle = '';
+    this.formDialogRef = this.dialog.open(this.formDialog, {
+      width: '520px',
+      panelClass: 'custom-dialog',
+      disableClose: true
+    });
+  }
+
   startEdit(profil: Profil): void {
     this.editingId = profil.id;
     this.currentLibelle = profil.libelle;
+    this.formDialogRef = this.dialog.open(this.formDialog, {
+      width: '520px',
+      panelClass: 'custom-dialog',
+      disableClose: true
+    });
+  }
+
+  closeFormDialog(): void {
+    this.formDialogRef?.close();
+    this.formDialogRef = null;
+    this.cancelEdit();
   }
 
   cancelEdit(): void {
@@ -118,7 +142,7 @@ export class ProfilsComponent implements OnInit, AfterViewInit {
             duration: 3000,
             panelClass: ['success-snack']
           });
-          this.cancelEdit();
+          this.closeFormDialog();
           this.loadProfils();
         },
         error: () => {
@@ -137,7 +161,7 @@ export class ProfilsComponent implements OnInit, AfterViewInit {
           duration: 3000,
           panelClass: ['success-snack']
         });
-        this.currentLibelle = '';
+        this.closeFormDialog();
         this.loadProfils();
       },
       error: () => {
@@ -170,8 +194,13 @@ export class ProfilsComponent implements OnInit, AfterViewInit {
             });
             this.loadProfils();
           },
-          error: () => {
-            this.snackBar.open('Erreur lors de la suppression du profil', 'Fermer', {
+          error: (error: HttpErrorResponse) => {
+            const backendMessage = String(error.error?.message ?? '').toLowerCase();
+            const isUsedProfil = error.status === 409
+              || backendMessage.includes('profil est utilise')
+              || backendMessage.includes('profil est utilisé');
+
+            this.snackBar.open(isUsedProfil ? 'Ce profil est utilisé' : 'Erreur lors de la suppression du profil', 'Fermer', {
               duration: 4000,
               panelClass: ['error-snack']
             });

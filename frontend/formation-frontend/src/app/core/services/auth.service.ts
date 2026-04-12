@@ -57,6 +57,11 @@ export class AuthService {
     return role === 'responsable';
   }
 
+  isSimpleUser(): boolean {
+    const role = this.getNormalizedRole();
+    return role === 'user' || role === 'utilisateur' || role === 'simple utilisateur';
+  }
+
   hasAnyRole(expectedRoles: string[]): boolean {
     if (expectedRoles.length === 0) {
       return true;
@@ -84,6 +89,9 @@ export class AuthService {
     }
     if (cleaned.includes('responsable')) {
       return 'responsable';
+    }
+    if (cleaned.includes('utilisateur') || cleaned === 'user') {
+      return 'user';
     }
     return cleaned;
   }

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -10,10 +10,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { AuthService } from '../../core/services/auth.service';
-import { Formation } from '../../core/models/formation.model';
-import { FormateurService } from '../../core/services/formateur.service';
-import { FormationService } from '../../core/services/formation.service';
-import { ParticipantService } from '../../core/services/participant.service';
+import { StatistiqueService, StatCountItem } from '../../core/services/statistique.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,32 +23,46 @@ export class DashboardComponent implements OnInit {
   login = '';
   role = '';
   totalFormations = 0;
-  totalFormateurs = 0;
   totalParticipants = 0;
-  recentFormations: Formation[] = [];
+  totalDomaines = 0;
+  totalBudget = 0;
+  formationsThisYear = 0;
   loading = true;
 
   constructor(
     private readonly authService: AuthService,
-    private readonly formationService: FormationService,
-    private readonly formateurService: FormateurService,
-    private readonly participantService: ParticipantService
+    private readonly router: Router,
+    private readonly statistiqueService: StatistiqueService
   ) {}
 
   ngOnInit(): void {
     this.login = this.authService.getLogin();
     this.role = this.authService.getRole();
 
-    forkJoin([
-      this.formationService.getAllFormations(),
-      this.formateurService.getAll(),
-      this.participantService.getAll()
-    ]).subscribe({
-      next: ([formations, formateurs, participants]) => {
-        this.totalFormations = formations.length;
-        this.totalFormateurs = formateurs.length;
-        this.totalParticipants = participants.length;
-        this.recentFormations = formations.slice(0, 5);
+    if (this.authService.isResponsable()) {
+      this.loading = false;
+      this.router.navigate(['/statistiques']);
+      return;
+    }
+
+    if (!this.authService.isAdmin() && !this.authService.isSimpleUser()) {
+      this.loading = false;
+      this.router.navigate(['/unauthorized']);
+      return;
+    }
+
+    forkJoin({
+      byDomaine: this.statistiqueService.getFormationsByDomaine(),
+      byStructure: this.statistiqueService.getParticipantsByStructure(),
+      byAnnee: this.statistiqueService.getFormationsByAnnee(),
+      budgetTotal: this.statistiqueService.getBudgetTotal()
+    }).subscribe({
+      next: (result) => {
+        this.totalDomaines = result.byDomaine.length;
+        this.totalFormations = result.byAnnee.reduce((sum, item: StatCountItem) => sum + item.count, 0);
+        this.totalParticipants = result.byStructure.reduce((sum, item: StatCountItem) => sum + item.count, 0);
+        this.totalBudget = result.budgetTotal;
+        this.formationsThisYear = result.byAnnee.find((item) => Number(item.label) === new Date().getFullYear())?.count ?? 0;
         this.loading = false;
       },
       error: () => {

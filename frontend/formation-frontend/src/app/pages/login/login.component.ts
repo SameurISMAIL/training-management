@@ -63,6 +63,11 @@ export class LoginComponent {
     this.authService.login(login, password).subscribe({
       next: () => {
         this.loading = false;
+        if (this.authService.isResponsable()) {
+          this.router.navigate(['/statistiques']);
+          return;
+        }
+
         this.router.navigate(['/dashboard']);
       },
       error: () => {

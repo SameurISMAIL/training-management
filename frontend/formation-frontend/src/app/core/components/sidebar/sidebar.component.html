@@ -8,7 +8,6 @@
   <div class="nav-list">
     <a
       *ngFor="let item of mainNavItems"
-      mat-button
       class="nav-link"
       [routerLink]="item.route"
       routerLinkActive="active-link"
@@ -19,20 +18,21 @@
     </a>
   </div>
 
-  <div class="nav-section-title">Administration</div>
-  <div class="nav-list">
-    <a
-      *ngFor="let item of adminNavItems"
-      mat-button
-      class="nav-link"
-      [routerLink]="item.route"
-      routerLinkActive="active-link"
-      (click)="onNavigate()"
-      [class.hidden]="!canShow(item)">
-      <mat-icon>{{ item.icon }}</mat-icon>
-      <span>{{ item.label }}</span>
-    </a>
-  </div>
+  <ng-container *ngIf="authService.isAdmin()">
+    <div class="nav-section-title">Administration</div>
+    <div class="nav-list">
+      <a
+        *ngFor="let item of adminNavItems"
+        class="nav-link"
+        [routerLink]="item.route"
+        routerLinkActive="active-link"
+        (click)="onNavigate()"
+        [class.hidden]="!canShow(item)">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
+      </a>
+    </div>
+  </ng-container>
 
   <div class="sidebar-user" *ngIf="authService.isLoggedIn()">
     <div class="user-dot">{{ authService.getLogin().charAt(0).toUpperCase() }}</div>

@@ -33,7 +33,8 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(request.getLogin(), request.getPassword())
             );
 
-            String token = jwtUtil.generateToken(request.getLogin());
+                String authenticatedLogin = authentication.getName();
+                String token = jwtUtil.generateToken(authenticatedLogin);
             String role = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .findFirst()
@@ -42,7 +43,7 @@ public class AuthController {
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
             response.put("role", role);
-            response.put("login", request.getLogin());
+            response.put("login", authenticatedLogin);
 
             return ResponseEntity.ok(response);
         } catch (AuthenticationException ex) {

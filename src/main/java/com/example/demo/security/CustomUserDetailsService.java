@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        Utilisateur utilisateur = utilisateurRepository.findByLogin(login)
+        Utilisateur utilisateur = utilisateurRepository.findByLoginIgnoreCase(login)
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur introuvable avec le login " + login));
 
         GrantedAuthority authority = new SimpleGrantedAuthority(mapToAuthority(utilisateur.getRole().getNom()));
@@ -40,9 +40,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         String normalized = roleName.trim().toLowerCase();
 
+        if (normalized.contains("admin")) {
+            return "ROLE_ADMIN";
+        }
+
+        if (normalized.contains("responsable")) {
+            return "ROLE_RESPONSABLE";
+        }
+
         return switch (normalized) {
-            case "administrateur" -> "ROLE_ADMIN";
-            case "responsable" -> "ROLE_RESPONSABLE";
             case "simple utilisateur" -> "ROLE_USER";
             default -> "ROLE_" + normalized.toUpperCase().replace(' ', '_');
         };

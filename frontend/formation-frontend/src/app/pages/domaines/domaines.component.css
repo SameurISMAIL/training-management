@@ -1,44 +1,119 @@
-.admin-layout {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 20px;
-  align-items: start;
-}
-
-.table-card {
+.users-card {
   border-radius: 12px;
 }
 
-.form-card {
-  border-radius: 12px;
-  position: sticky;
-  top: 88px;
-}
-
-.form-card mat-card-header {
-  background: var(--primary-light);
-  border-radius: 12px 12px 0 0;
-  padding: 16px 20px;
-}
-
-.form-card mat-card-title {
+.users-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  color: var(--primary);
-  font-size: 16px;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.users-toolbar {
+  margin-bottom: 8px;
 }
 
 .search-field {
-  width: 100%;
+  width: 360px;
+  max-width: 100%;
 }
 
-@media (max-width: 991px) {
-  .admin-layout {
-    grid-template-columns: 1fr;
+.table-shell {
+  border: 1px solid #dfe3f0;
+  border-radius: 10px;
+  overflow-x: auto;
+  background: #fff;
+}
+
+.full-table {
+  width: 100%;
+  min-width: 400px;
+}
+
+.mat-column-libelle {
+  width: 80%;
+  padding-left: 16px !important;
+}
+
+.mat-column-actions {
+  width: 20%;
+  text-align: right;
+}
+
+.full-table td.mat-mdc-cell {
+  padding: 10px 16px;
+  vertical-align: middle;
+  overflow: visible;
+}
+
+.full-table th.mat-mdc-header-cell {
+  padding: 10px 16px;
+}
+
+.users-card .mat-mdc-header-row {
+  background: #31439a;
+}
+
+.users-card .mat-mdc-header-cell {
+  color: #fff;
+  font-weight: 600;
+}
+
+.users-card .mat-mdc-row:nth-child(even) {
+  background: #f9fbff;
+}
+
+.users-card .mat-mdc-row:hover {
+  background: #f0f3ff;
+}
+
+.users-card .mat-mdc-cell,
+.users-card .mat-mdc-header-cell {
+  border-bottom-color: #e7eaf4;
+}
+
+.actions-cell {
+  text-align: right;
+}
+
+.loading-container {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state {
+  min-height: 220px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
+  padding: 12px;
+  text-align: center;
+  color: #596483;
+}
+
+.empty-state mat-icon {
+  font-size: 34px;
+  width: 34px;
+  height: 34px;
+}
+
+.dialog-field {
+  width: 100%;
+  margin-top: 4px;
+}
+
+@media (max-width: 640px) {
+  .users-header {
+    align-items: stretch;
   }
 
-  .form-card {
-    position: static;
+  .users-header .primary-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
