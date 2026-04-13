@@ -43,6 +43,32 @@ export class AuthService {
     return this.normalizeRoleValue(this.getRole());
   }
 
+  getDisplayRole(): string {
+    const normalized = this.getNormalizedRole();
+
+    if (normalized === 'administrateur') {
+      return 'Administrateur';
+    }
+    if (normalized === 'responsable') {
+      return 'Responsable';
+    }
+    if (normalized === 'user') {
+      return 'Simple Utilisateur';
+    }
+
+    const rawRole = this.getRole()
+      .replace(/^ROLE_/, '')
+      .replace(/_/g, ' ')
+      .trim()
+      .toLowerCase();
+
+    return rawRole
+      .split(' ')
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
+  }
+
   getLogin(): string {
     return localStorage.getItem('auth_login') ?? '';
   }

@@ -1,9 +1,14 @@
 <mat-sidenav-container>
-  <mat-sidenav #sidenav mode="side" [opened]="!isLoginRoute" class="app-sidenav">
-    <app-sidebar></app-sidebar>
+  <mat-sidenav
+    [mode]="isMobileView ? 'over' : 'side'"
+    [(opened)]="isSidenavOpened"
+    [disableClose]="!isMobileView"
+    class="app-sidenav"
+  >
+    <app-sidebar (navigate)="onSidebarNavigate()"></app-sidebar>
   </mat-sidenav>
   <mat-sidenav-content>
-    <app-navbar (toggleSidenav)="sidenav.toggle()"></app-navbar>
+    <app-navbar (toggleSidenav)="onToggleSidenav()"></app-navbar>
     <div class="main-content">
       <router-outlet></router-outlet>
     </div>

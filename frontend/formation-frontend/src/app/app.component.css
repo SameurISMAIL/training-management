@@ -1,12 +1,23 @@
 .app-sidenav {
 	width: 260px;
+	max-width: 86vw;
 }
 
 mat-sidenav-container {
 	height: 100vh;
-	background: #f0f2f5;
+	background: var(--app-bg);
 }
 
 .main-content {
 	padding: 0;
+}
+
+@media (max-width: 991px) {
+	.app-sidenav {
+		width: min(82vw, 320px);
+	}
+
+	mat-sidenav-container {
+		height: 100dvh;
+	}
 }

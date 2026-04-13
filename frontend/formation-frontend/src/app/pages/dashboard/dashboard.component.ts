@@ -37,7 +37,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.login = this.authService.getLogin();
-    this.role = this.authService.getRole();
+    this.role = this.authService.getDisplayRole();
 
     if (this.authService.isResponsable()) {
       this.loading = false;

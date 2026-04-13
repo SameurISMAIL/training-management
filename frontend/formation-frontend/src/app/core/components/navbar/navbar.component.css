@@ -1,7 +1,7 @@
 .navbar {
   height: 64px;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: var(--surface-bg);
+  box-shadow: var(--card-shadow);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -48,6 +48,15 @@
 
 .logout-btn {
   border-radius: 8px;
+  color: var(--text-primary) !important;
+}
+
+.logout-btn mat-icon {
+  color: inherit;
+}
+
+.theme-toggle {
+  color: var(--text-secondary);
 }
 
 @media (max-width: 767px) {

@@ -1,8 +1,8 @@
 .sidebar {
   width: 260px;
   height: 100%;
-  background: #fff;
-  border-right: 1px solid #e8eaf6;
+  background: var(--surface-bg);
+  border-right: 1px solid var(--divider);
   display: flex;
   flex-direction: column;
 }
@@ -12,7 +12,7 @@
   align-items: center;
   gap: 12px;
   padding: 20px;
-  border-bottom: 1px solid #f0f2f5;
+  border-bottom: 1px solid var(--divider);
 }
 
 .logo-icon {
@@ -31,7 +31,7 @@
   padding: 16px 20px 6px;
   font-size: 11px;
   font-weight: 700;
-  color: #999;
+  color: var(--text-secondary);
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
@@ -49,7 +49,7 @@
   padding: 12px 20px;
   border-radius: 0;
   width: 100%;
-  color: #555;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 500;
   transition: background 0.2s;
@@ -89,8 +89,8 @@
 .sidebar-user {
   margin-top: auto;
   padding: 16px 20px;
-  border-top: 1px solid #f0f2f5;
-  background: #f8f9ff;
+  border-top: 1px solid var(--divider);
+  background: var(--app-bg);
   display: flex;
   align-items: center;
   gap: 10px;

@@ -10,8 +10,15 @@
   </div>
 
   <div class="navbar-right" *ngIf="authService.isLoggedIn()">
-    <button mat-icon-button type="button" aria-label="Notifications">
-      <mat-icon>notifications_none</mat-icon>
+    <button
+      mat-icon-button
+      type="button"
+      class="theme-toggle"
+      (click)="toggleDarkMode()"
+      [attr.aria-label]="isDarkMode ? 'Activer le mode clair' : 'Activer le mode sombre'"
+      [matTooltip]="isDarkMode ? 'Mode clair' : 'Mode sombre'"
+    >
+      <mat-icon>{{ isDarkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
     </button>
     <div class="user-avatar">{{ userInitial }}</div>
     <span class="user-login">{{ authService.getLogin() }}</span>

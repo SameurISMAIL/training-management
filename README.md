@@ -23,7 +23,7 @@ The project is split into:
 ## 2) Tech Stack
 
 Backend:
-- Java 17
+- Java 25
 - Spring Boot 3.3.5
 - Spring Web, Spring Data JPA, Spring Security, Validation
 - JWT (`jjwt`)
@@ -58,7 +58,7 @@ POO/
 ## 4) Prerequisites
 
 Install the following:
-- JDK 17
+- JDK 25
 - Maven 3.9+
 - Node.js 18+ (or 20 LTS)
 - npm 9+
