@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Graduation cap faviconn">
+  <rect width="64" height="64" rx="14" fill="#1c2550"/>
+  <path d="M6 24L32 14L58 24L32 34L6 24Z" fill="#8fa2ff"/>
+  <path d="M20 30V40C20 44.5 25.4 48 32 48C38.6 48 44 44.5 44 40V30L32 36L20 30Z" fill="#cfd7ff"/>
+  <path d="M58 24V37" stroke="#8fa2ff" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="58" cy="40" r="3" fill="#8fa2ff"/>
+</svg>
