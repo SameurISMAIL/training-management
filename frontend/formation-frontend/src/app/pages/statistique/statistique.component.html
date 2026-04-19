@@ -2,71 +2,302 @@
 	<div class="page-header">
 		<div class="page-title">
 			<mat-icon>bar_chart</mat-icon>
-			Tableau de bord statistique
+			Statistiques
 		</div>
 	</div>
 
-	<div class="stats-summary-grid">
-		<div class="summary-card indigo">
-			<mat-icon>school</mat-icon>
-			<div>
-				<span class="summary-number">{{ totalFormations }}</span>
-				<span class="summary-label">Formations totales</span>
-			</div>
-		</div>
-		<div class="summary-card teal">
-			<mat-icon>group</mat-icon>
-			<div>
-				<span class="summary-number">{{ totalParticipants }}</span>
-				<span class="summary-label">Participants</span>
-			</div>
-		</div>
-		<div class="summary-card orange">
-			<mat-icon>payments</mat-icon>
-			<div>
-				<span class="summary-number">{{ totalBudget | number:'1.0-0' }} TND</span>
-				<span class="summary-label">Budget total</span>
-			</div>
-		</div>
-		<div class="summary-card green">
-			<mat-icon>today</mat-icon>
-			<div>
-				<span class="summary-number">{{ formationsThisYear }}</span>
-				<span class="summary-label">Cette année</span>
-			</div>
-		</div>
+	<div *ngIf="loading" class="state-container">
+		<mat-spinner diameter="48"></mat-spinner>
+		<p>Chargement des statistiques...</p>
 	</div>
 
-	<div class="charts-grid">
-		<mat-card class="chart-card">
-			<mat-card-header>
-				<mat-card-title>Formations par domaine</mat-card-title>
-			</mat-card-header>
-			<mat-card-content>
-				<div style="height:300px;position:relative">
-					<canvas baseChart [data]="barData" [type]="'bar'" [options]="barOptions"></canvas>
-				</div>
-			</mat-card-content>
-		</mat-card>
-		<mat-card class="chart-card">
-			<mat-card-header>
-				<mat-card-title>Participants par structure</mat-card-title>
-			</mat-card-header>
-			<mat-card-content>
-				<div style="height:300px;position:relative">
-					<canvas baseChart [data]="pieData" [type]="'pie'" [options]="pieOptions"></canvas>
-				</div>
-			</mat-card-content>
-		</mat-card>
-		<mat-card class="chart-card full-width">
-			<mat-card-header>
-				<mat-card-title>Évolution des formations par année</mat-card-title>
-			</mat-card-header>
-			<mat-card-content>
-				<div style="height:300px;position:relative">
-					<canvas baseChart [data]="lineData" [type]="'line'" [options]="lineOptions"></canvas>
-				</div>
-			</mat-card-content>
-		</mat-card>
+	<div *ngIf="!loading && errorMessage" class="state-container error-state">
+		<mat-icon>error_outline</mat-icon>
+		<p>{{ errorMessage }}</p>
+		<button mat-flat-button color="primary" (click)="loadStats()">Reessayer</button>
 	</div>
-</div>
+
+	<div *ngIf="!loading && !errorMessage">
+		<div class="stats-summary-grid" [class.focused-view]="selectedSection !== null">
+			<div *ngIf="selectedSection === null || selectedSection === 'formations'" class="summary-card formation clickable" [class.active-card]="selectedSection === 'formations'" [class.shrink-card]="selectedSection !== null" (click)="selectSection('formations')">
+				<mat-icon>school</mat-icon>
+				<div class="summary-meta">
+					<span class="summary-number">{{ totalFormations }}</span>
+					<span class="summary-label">Total formations</span>
+				</div>
+			</div>
+			<div *ngIf="selectedSection === null || selectedSection === 'participants'" class="summary-card participant clickable" [class.active-card]="selectedSection === 'participants'" [class.shrink-card]="selectedSection !== null" (click)="selectSection('participants')">
+				<mat-icon>groups</mat-icon>
+				<div class="summary-meta">
+					<span class="summary-number">{{ totalParticipants }}</span>
+					<span class="summary-label">Total participants</span>
+				</div>
+			</div>
+			<div *ngIf="selectedSection === null || selectedSection === 'budget'" class="summary-card budget clickable" [class.active-card]="selectedSection === 'budget'" [class.shrink-card]="selectedSection !== null" (click)="selectSection('budget')">
+				<mat-icon>account_balance_wallet</mat-icon>
+				<div class="summary-meta">
+					<span class="summary-number">{{ totalBudget | number:'1.0-0' }} TND</span>
+					<span class="summary-label">Budget total</span>
+				</div>
+			</div>
+			<div *ngIf="selectedSection === null || selectedSection === 'formateurs'" class="summary-card trainer clickable" [class.active-card]="selectedSection === 'formateurs'" [class.shrink-card]="selectedSection !== null" (click)="selectSection('formateurs')">
+				<mat-icon>co_present</mat-icon>
+				<div class="summary-meta">
+					<span class="summary-number">{{ totalFormateurs }}</span>
+					<span class="summary-label">Total formateurs</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="accordion-panel" [class.open]="selectedSection === 'formations'" [attr.aria-hidden]="selectedSection !== 'formations'">
+			<div class="section-title">Statistiques des formations</div>
+			<div class="charts-grid">
+			<mat-card class="chart-card">
+				<mat-card-header>
+					<mat-card-title>Formations par année</mat-card-title>
+				</mat-card-header>
+				<mat-card-content>
+					<div class="chart-container">
+						<canvas baseChart [data]="formationsByYearData" [type]="'bar'" [options]="commonBarOptions"></canvas>
+					</div>
+				</mat-card-content>
+			</mat-card>
+
+			<mat-card class="chart-card">
+				<mat-card-header>
+					<mat-card-title>Formations par domaine</mat-card-title>
+				</mat-card-header>
+				<mat-card-content>
+					<div class="chart-container">
+						<canvas baseChart [data]="formationsByDomaineData" [type]="'pie'" [options]="pieOptions"></canvas>
+					</div>
+				</mat-card-content>
+			</mat-card>
+
+			<mat-card class="chart-card">
+				<mat-card-header>
+					<mat-card-title>Participants par structure</mat-card-title>
+				</mat-card-header>
+				<mat-card-content>
+					<div class="structure-bars">
+						<div class="structure-row" *ngFor="let item of byStructureChartData | slice:0:2">
+							<div class="structure-label">{{ item.label }}</div>
+							<div class="structure-value">{{ item.count }}</div>
+							<div class="structure-track">
+								<div class="structure-fill" [style.width.%]="item.percentage"></div>
+							</div>
+						</div>
+					</div>
+				</mat-card-content>
+			</mat-card>
+
+			<mat-card class="chart-card">
+				<mat-card-header>
+					<mat-card-title>Formateurs internes vs externes</mat-card-title>
+				</mat-card-header>
+				<mat-card-content>
+					<div class="chart-container">
+						<canvas baseChart [data]="formateursTypeData" [type]="'doughnut'" [options]="doughnutOptions"></canvas>
+					</div>
+				</mat-card-content>
+			</mat-card>
+
+			<mat-card class="chart-card full-width">
+				<mat-card-header>
+					<mat-card-title>Evolution mensuelle des formations</mat-card-title>
+				</mat-card-header>
+				<mat-card-content>
+					<div class="chart-container line-chart">
+						<canvas baseChart [data]="monthlyEvolutionData" [type]="'line'" [options]="lineOptions"></canvas>
+					</div>
+				</mat-card-content>
+			</mat-card>
+		</div>
+
+		<div class="details-grid">
+			<mat-card class="detail-card">
+				<mat-card-header>
+					<mat-card-title>Participants les plus actifs</mat-card-title>
+				</mat-card-header>
+				<mat-card-content>
+					<div class="metric-list">
+						<div class="metric-row" *ngFor="let item of mostActiveParticipants | slice:0:5">
+							<span class="dot blue"></span>
+							<span class="metric-label">{{ item.label }}</span>
+							<span class="metric-value">{{ item.count }}</span>
+						</div>
+					</div>
+				</mat-card-content>
+			</mat-card>
+			</div>
+			<div class="details-grid compact-details">
+				<mat-card class="detail-card">
+					<mat-card-header>
+						<mat-card-title>Top 5 formations les plus suivies</mat-card-title>
+					</mat-card-header>
+					<mat-card-content>
+						<div class="metric-list">
+							<div class="metric-row" *ngFor="let item of topFormations | slice:0:5">
+								<span class="dot green"></span>
+								<span class="metric-label">{{ item.label }}</span>
+								<span class="metric-value">{{ item.count }}</span>
+							</div>
+						</div>
+					</mat-card-content>
+				</mat-card>
+				<mat-card class="detail-card">
+					<mat-card-header>
+						<mat-card-title>Formations par structure</mat-card-title>
+					</mat-card-header>
+					<mat-card-content>
+						<div class="metric-list">
+							<div class="metric-row" *ngFor="let item of formationsByStructure">
+								<span class="dot sky"></span>
+								<span class="metric-label">{{ item.label }}</span>
+								<span class="metric-value">{{ item.count }}</span>
+							</div>
+						</div>
+					</mat-card-content>
+				</mat-card>
+				<mat-card class="detail-card">
+					<mat-card-header>
+						<mat-card-title>Formations par formateur</mat-card-title>
+					</mat-card-header>
+					<mat-card-content>
+						<div class="metric-list">
+							<div class="metric-row" *ngFor="let item of formationsByFormateur | slice:0:8">
+								<span class="dot orange"></span>
+								<span class="metric-label">{{ item.label }}</span>
+								<span class="metric-value">{{ item.count }}</span>
+							</div>
+						</div>
+					</mat-card-content>
+				</mat-card>
+			</div>
+		</div>
+
+		<div class="accordion-panel" [class.open]="selectedSection === 'participants'" [attr.aria-hidden]="selectedSection !== 'participants'">
+			<div class="section-title">Statistiques des participants</div>
+			<div class="charts-grid">
+				<mat-card class="chart-card">
+					<mat-card-header>
+						<mat-card-title>Participants par structure</mat-card-title>
+					</mat-card-header>
+					<mat-card-content>
+						<div class="structure-bars">
+							<div class="structure-row" *ngFor="let item of byStructureChartData">
+								<div class="structure-label">{{ item.label }}</div>
+								<div class="structure-value">{{ item.count }}</div>
+								<div class="structure-track">
+									<div class="structure-fill" [style.width.%]="item.percentage"></div>
+								</div>
+							</div>
+						</div>
+					</mat-card-content>
+				</mat-card>
+				<mat-card class="chart-card">
+					<mat-card-header>
+						<mat-card-title>Participants les plus actifs</mat-card-title>
+					</mat-card-header>
+					<mat-card-content>
+						<div class="metric-list">
+							<div class="metric-row" *ngFor="let item of mostActiveParticipants | slice:0:10">
+								<span class="dot blue"></span>
+								<span class="metric-label">{{ item.label }}</span>
+								<span class="metric-value">{{ item.count }}</span>
+							</div>
+						</div>
+					</mat-card-content>
+				</mat-card>
+			</div>
+			<div class="details-grid compact-details">
+				<mat-card class="detail-card">
+					<mat-card-header><mat-card-title>Participants par annee</mat-card-title></mat-card-header>
+					<mat-card-content>
+						<div class="metric-list">
+							<div class="metric-row" *ngFor="let item of participantsByAnnee">
+								<span class="dot cyan"></span><span class="metric-label">{{ item.label }}</span><span class="metric-value">{{ item.count }}</span>
+							</div>
+						</div>
+					</mat-card-content>
+				</mat-card>
+				<mat-card class="detail-card">
+					<mat-card-header><mat-card-title>Participants par domaine</mat-card-title></mat-card-header>
+					<mat-card-content>
+						<div class="metric-list">
+							<div class="metric-row" *ngFor="let item of participantsByDomaine">
+								<span class="dot violet"></span><span class="metric-label">{{ item.label }}</span><span class="metric-value">{{ item.count }}</span>
+							</div>
+						</div>
+					</mat-card-content>
+				</mat-card>
+				<mat-card class="detail-card">
+					<mat-card-header><mat-card-title>Moyenne participants / formation</mat-card-title></mat-card-header>
+					<mat-card-content>
+						<div class="average-box"><p class="highlight-number">{{ averageParticipantsPerFormation | number:'1.1-2' }}</p><p>participants en moyenne</p></div>
+					</mat-card-content>
+				</mat-card>
+			</div>
+		</div>
+
+		<div class="accordion-panel" [class.open]="selectedSection === 'budget'" [attr.aria-hidden]="selectedSection !== 'budget'">
+			<div class="section-title">Statistiques budget</div>
+			<div class="details-grid">
+				<mat-card class="detail-card">
+					<mat-card-header><mat-card-title>Budget par domaine</mat-card-title></mat-card-header>
+					<mat-card-content>
+						<div class="budget-list">
+							<div class="budget-row" *ngFor="let item of budgetByDomaine | slice:0:10">
+								<div class="budget-head"><span class="budget-label">{{ item.label }}</span><span class="budget-value">{{ item.budget | number:'1.0-0' }} TND</span></div>
+								<div class="budget-track"><div class="budget-fill" [style.width.%]="budgetByDomaineMax ? (item.budget / budgetByDomaineMax) * 100 : 0"></div></div>
+							</div>
+						</div>
+					</mat-card-content>
+				</mat-card>
+				<mat-card class="detail-card">
+					<mat-card-header><mat-card-title>Budget par formation</mat-card-title></mat-card-header>
+					<mat-card-content>
+						<div class="budget-list">
+							<div class="budget-row" *ngFor="let item of budgetByFormation | slice:0:10">
+								<div class="budget-head"><span class="budget-label">{{ item.label }}</span><span class="budget-value">{{ item.budget | number:'1.0-0' }} TND</span></div>
+								<div class="budget-track"><div class="budget-fill purple" [style.width.%]="budgetByFormationMax ? (item.budget / budgetByFormationMax) * 100 : 0"></div></div>
+							</div>
+						</div>
+					</mat-card-content>
+				</mat-card>
+				<mat-card class="detail-card">
+					<mat-card-header><mat-card-title>Budget par annee</mat-card-title></mat-card-header>
+					<mat-card-content>
+						<div class="metric-list">
+							<div class="metric-row" *ngFor="let item of budgetByAnnee">
+								<span class="dot indigo"></span><span class="metric-label">{{ item.label }}</span><span class="metric-value">{{ item.budget | number:'1.0-0' }} TND</span>
+							</div>
+						</div>
+					</mat-card-content>
+				</mat-card>
+			</div>
+		</div>
+
+		<div class="accordion-panel" [class.open]="selectedSection === 'formateurs'" [attr.aria-hidden]="selectedSection !== 'formateurs'">
+			<div class="section-title">Statistiques formateurs</div>
+			<div class="charts-grid">
+				<mat-card class="chart-card">
+					<mat-card-header><mat-card-title>Formateurs internes vs externes</mat-card-title></mat-card-header>
+					<mat-card-content>
+						<div class="chart-container">
+							<canvas baseChart [data]="formateursTypeData" [type]="'doughnut'" [options]="doughnutOptions"></canvas>
+						</div>
+					</mat-card-content>
+				</mat-card>
+				<mat-card class="chart-card">
+					<mat-card-header><mat-card-title>Formations par formateur</mat-card-title></mat-card-header>
+					<mat-card-content>
+						<div class="metric-list">
+							<div class="metric-row" *ngFor="let item of formationsByFormateur | slice:0:12">
+								<span class="dot orange"></span><span class="metric-label">{{ item.label }}</span><span class="metric-value">{{ item.count }}</span>
+							</div>
+						</div>
+					</mat-card-content>
+				</mat-card>
+			</div>
+		</div>

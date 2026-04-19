@@ -13,4 +13,11 @@ public interface ParticipantRepository extends JpaRepository<Participant, Intege
 
 	@Query("SELECT COALESCE(s.libelle, 'Non definie'), COUNT(p) FROM Participant p LEFT JOIN p.structure s GROUP BY s.libelle")
 	List<Object[]> countParticipantsByStructure();
+
+	@Query("SELECT CONCAT(COALESCE(p.nom, 'Inconnu'), ' ', COALESCE(p.prenom, '')), COUNT(f) " +
+			"FROM Formation f JOIN f.participants p " +
+			"GROUP BY p.id, p.nom, p.prenom " +
+			"HAVING COUNT(f) > 1 " +
+			"ORDER BY COUNT(f) DESC")
+	List<Object[]> mostActiveParticipants();
 }
