@@ -15,6 +15,12 @@
   margin-bottom: 8px;
 }
 
+.readonly-note {
+  margin: 0 0 10px;
+  color: #596483;
+  font-size: 13px;
+}
+
 .search-field {
   width: 360px;
   max-width: 100%;

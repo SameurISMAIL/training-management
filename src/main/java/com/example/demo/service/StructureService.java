@@ -24,21 +24,14 @@ public class StructureService {
     }
 
     public Structure createStructure(Structure structure) {
-        return structureRepository.save(structure);
+        throw new IllegalStateException("Les structures sont fixes: seules 'Direction centrale' et 'Direction régionale' sont autorisees");
     }
 
     public Structure updateStructure(Integer id, Structure structure) {
-        Structure existing = structureRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Structure introuvable avec l'id " + id));
-
-        existing.setLibelle(structure.getLibelle());
-
-        return structureRepository.save(existing);
+        throw new IllegalStateException("La modification des structures est interdite: la liste est fixe");
     }
 
     public void deleteStructure(Integer id) {
-        Structure existing = structureRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Structure introuvable avec l'id " + id));
-        structureRepository.delete(existing);
+        throw new IllegalStateException("La suppression des structures est interdite: la liste est fixe");
     }
 }

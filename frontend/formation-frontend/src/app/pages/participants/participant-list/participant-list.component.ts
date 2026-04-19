@@ -112,8 +112,9 @@ export class ParticipantListComponent implements OnInit, AfterViewInit {
             });
             this.loadParticipants();
           },
-          error: () => {
-            this.snackBar.open('Erreur lors de la suppression', 'Fermer', {
+          error: (err) => {
+            const message = err?.error?.message || 'Erreur lors de la suppression';
+            this.snackBar.open(message, 'Fermer', {
               duration: 4000,
               panelClass: ['error-snack']
             });

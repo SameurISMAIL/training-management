@@ -1,4 +1,26 @@
+.employeur-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.employeur-row,
+.employeur-create-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.employeur-field {
+  width: 100%;
+}
+
 @media (max-width: 767px) {
+  .employeur-row,
+  .employeur-create-row {
+    flex-direction: column;
+  }
+
   .dialog-content {
     min-width: auto !important;
     max-width: 100% !important;

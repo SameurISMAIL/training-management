@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.entity.Domaine;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.DomaineRepository;
+import com.example.demo.repository.FormationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.List;
 public class DomaineService {
 
     private final DomaineRepository domaineRepository;
+    private final FormationRepository formationRepository;
 
     public List<Domaine> getAllDomaines() {
         return domaineRepository.findAll();
@@ -39,6 +41,11 @@ public class DomaineService {
     public void deleteDomaine(Integer id) {
         Domaine existing = domaineRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Domaine introuvable avec l'id " + id));
+
+        if (formationRepository.existsByDomaine_Id(id)) {
+            throw new IllegalStateException("Impossible de supprimer ce domaine car il est deja utilise dans une ou plusieurs formations");
+        }
+
         domaineRepository.delete(existing);
     }
 }

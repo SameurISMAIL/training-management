@@ -41,7 +41,7 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
   styleUrl: './structures.component.css'
 })
 export class StructuresComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['libelle', 'actions'];
+  displayedColumns: string[] = ['libelle'];
   dataSource = new MatTableDataSource<Structure>([]);
   loading = false;
   editingId: number | null = null;
@@ -193,8 +193,9 @@ export class StructuresComponent implements OnInit, AfterViewInit {
             });
             this.loadStructures();
           },
-          error: () => {
-            this.snackBar.open('Erreur lors de la suppression de la structure', 'Fermer', {
+          error: (err) => {
+            const message = err?.error?.message || 'Erreur lors de la suppression de la structure';
+            this.snackBar.open(message, 'Fermer', {
               duration: 4000,
               panelClass: ['error-snack']
             });

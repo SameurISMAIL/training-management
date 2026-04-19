@@ -19,10 +19,10 @@
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
       <mat-form-field appearance="outline">
-        <mat-label>Année</mat-label>
+        <mat-label>Date de formation</mat-label>
         <mat-icon matPrefix>calendar_today</mat-icon>
-        <input matInput type="number" formControlName="annee">
-        <mat-error>Année entre 2000 et 2100</mat-error>
+        <input matInput type="date" formControlName="dateFormation">
+        <mat-error>Date de formation requise</mat-error>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Durée (jours)</mat-label>

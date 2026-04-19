@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Formateur;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.FormationRepository;
 import com.example.demo.repository.FormateurRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.List;
 public class FormateurService {
 
     private final FormateurRepository formateurRepository;
+    private final FormationRepository formationRepository;
 
     public List<Formateur> getAllFormateurs() {
         return formateurRepository.findAll();
@@ -44,6 +46,11 @@ public class FormateurService {
     public void deleteFormateur(Integer id) {
         Formateur existing = formateurRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Formateur introuvable avec l'id " + id));
+
+        if (formationRepository.existsByFormateur_Id(id)) {
+            throw new IllegalStateException("Impossible de supprimer ce formateur car il est deja utilise dans une ou plusieurs formations");
+        }
+
         formateurRepository.delete(existing);
     }
 }

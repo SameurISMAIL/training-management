@@ -5,7 +5,7 @@ import { Participant } from './participant.model';
 export interface Formation {
   id: number;
   titre: string;
-  annee: number;
+  dateFormation: string;
   duree: number;
   budget: number;
   domaine: Domaine | null;

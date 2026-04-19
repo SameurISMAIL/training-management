@@ -16,7 +16,7 @@
     </div>
 
     <div class="detail-grid">
-      <div><strong>Année:</strong> {{ formation.annee }}</div>
+      <div><strong>Date de formation:</strong> {{ formation.dateFormation | date:'dd/MM/yyyy' }}</div>
       <div><strong>Durée:</strong> {{ formation.duree }} jours</div>
       <div><strong>Budget:</strong> {{ formation.budget | currency:'TND':'symbol':'1.0-0' }}</div>
       <div><strong>Domaine:</strong> {{ formation.domaine?.libelle || '-' }}</div>

@@ -43,7 +43,7 @@ export class FormationDialogComponent implements OnInit {
 
   form = this.fb.group({
     titre: ['', Validators.required],
-    annee: [null as number | null, [Validators.required, Validators.min(2000), Validators.max(2100)]],
+    dateFormation: ['', Validators.required],
     duree: [null as number | null, [Validators.required, Validators.min(1)]],
     budget: [null as number | null, [Validators.required, Validators.min(0)]],
     idDomaine: [null as number | null, Validators.required],
@@ -61,7 +61,7 @@ export class FormationDialogComponent implements OnInit {
     if (this.data.mode === 'edit' && this.data.formation) {
       this.form.patchValue({
         titre: this.data.formation.titre,
-        annee: this.data.formation.annee,
+        dateFormation: this.data.formation.dateFormation,
         duree: this.data.formation.duree,
         budget: this.data.formation.budget,
         idDomaine: this.data.formation.domaine?.id ?? null,
@@ -78,15 +78,18 @@ export class FormationDialogComponent implements OnInit {
     }
 
     const value = this.form.getRawValue();
-    const payload: Formation = {
-      id: this.data.formation?.id ?? 0,
+    const participantIds = (value.participantIds ?? [])
+      .map((id) => Number(id))
+      .filter((id) => Number.isFinite(id) && id > 0);
+
+    const basePayload = {
       titre: value.titre ?? '',
-      annee: value.annee as number,
+      dateFormation: value.dateFormation as string,
       duree: value.duree as number,
       budget: value.budget as number,
-      domaine: { id: value.idDomaine as number, libelle: '' },
-      formateur: { id: value.idFormateur as number, nom: '', prenom: '', email: '', tel: 0, type: '', employeur: null },
-      participants: (value.participantIds ?? []).map((id) => ({
+      domaine: { id: Number(value.idDomaine), libelle: '' },
+      formateur: { id: Number(value.idFormateur), nom: '', prenom: '', email: '', tel: 0, type: '', employeur: null },
+      participants: participantIds.map((id) => ({
         id,
         nom: '',
         prenom: '',
@@ -96,6 +99,10 @@ export class FormationDialogComponent implements OnInit {
         profil: null
       }))
     };
+
+    const payload: Formation = this.data.mode === 'edit' && this.data.formation
+      ? ({ id: this.data.formation.id, ...basePayload } as Formation)
+      : (basePayload as Formation);
 
     this.dialogRef.close(payload);
   }

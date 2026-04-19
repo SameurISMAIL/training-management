@@ -193,8 +193,9 @@ export class DomainesComponent implements OnInit, AfterViewInit {
             });
             this.loadDomaines();
           },
-          error: () => {
-            this.snackBar.open('Erreur lors de la suppression du domaine', 'Fermer', {
+          error: (err) => {
+            const message = err?.error?.message || 'Erreur lors de la suppression du domaine';
+            this.snackBar.open(message, 'Fermer', {
               duration: 4000,
               panelClass: ['error-snack']
             });

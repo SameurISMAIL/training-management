@@ -195,12 +195,8 @@ export class ProfilsComponent implements OnInit, AfterViewInit {
             this.loadProfils();
           },
           error: (error: HttpErrorResponse) => {
-            const backendMessage = String(error.error?.message ?? '').toLowerCase();
-            const isUsedProfil = error.status === 409
-              || backendMessage.includes('profil est utilise')
-              || backendMessage.includes('profil est utilisé');
-
-            this.snackBar.open(isUsedProfil ? 'Ce profil est utilisé' : 'Erreur lors de la suppression du profil', 'Fermer', {
+            const message = error?.error?.message || 'Erreur lors de la suppression du profil';
+            this.snackBar.open(message, 'Fermer', {
               duration: 4000,
               panelClass: ['error-snack']
             });

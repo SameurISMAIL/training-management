@@ -15,4 +15,8 @@ export class EmployeurService {
   getAll(): Observable<Employeur[]> {
     return this.http.get<Employeur[]>(this.apiUrl);
   }
+
+  create(employeur: Employeur): Observable<Employeur> {
+    return this.http.post<Employeur>(this.apiUrl, employeur);
+  }
 }

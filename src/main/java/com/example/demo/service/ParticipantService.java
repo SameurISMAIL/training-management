@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.entity.Participant;
 import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.FormationRepository;
 import com.example.demo.repository.ParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.List;
 public class ParticipantService {
 
     private final ParticipantRepository participantRepository;
+    private final FormationRepository formationRepository;
 
     public List<Participant> getAllParticipants() {
         return participantRepository.findAll();
@@ -44,6 +46,11 @@ public class ParticipantService {
     public void deleteParticipant(Integer id) {
         Participant existing = participantRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Participant introuvable avec l'id " + id));
+
+        if (formationRepository.existsByParticipants_Id(id)) {
+            throw new IllegalStateException("Impossible de supprimer ce participant car il est deja utilise dans une ou plusieurs formations");
+        }
+
         participantRepository.delete(existing);
     }
 }

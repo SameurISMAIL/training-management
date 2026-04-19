@@ -51,7 +51,7 @@ export class FormationFormComponent implements OnInit {
 
   formationForm = this.fb.group({
     titre: ['', Validators.required],
-    annee: [null as number | null, [Validators.required, Validators.min(2000), Validators.max(2100)]],
+    dateFormation: ['', Validators.required],
     duree: [null as number | null, [Validators.required, Validators.min(1)]],
     budget: [null as number | null, [Validators.required, Validators.min(0)]],
     idDomaine: [null as number | null, Validators.required],
@@ -99,8 +99,8 @@ export class FormationFormComponent implements OnInit {
     return this.formationForm.controls.titre;
   }
 
-  get anneeControl() {
-    return this.formationForm.controls.annee;
+  get dateFormationControl() {
+    return this.formationForm.controls.dateFormation;
   }
 
   get dureeControl() {
@@ -136,7 +136,7 @@ export class FormationFormComponent implements OnInit {
   patchForm(formation: Formation): void {
     this.formationForm.patchValue({
       titre: formation.titre,
-      annee: formation.annee,
+      dateFormation: formation.dateFormation,
       duree: formation.duree,
       budget: formation.budget,
       idDomaine: formation.domaine?.id ?? null,
@@ -153,15 +153,18 @@ export class FormationFormComponent implements OnInit {
 
     this.saving = true;
     const formValue = this.formationForm.getRawValue();
-    const payload: Formation = {
-      id: this.formationId ?? 0,
+    const participantIds = (formValue.participantIds ?? [])
+      .map((participantId) => Number(participantId))
+      .filter((participantId) => Number.isFinite(participantId) && participantId > 0);
+
+    const basePayload = {
       titre: formValue.titre ?? '',
-      annee: formValue.annee as number,
+      dateFormation: formValue.dateFormation as string,
       duree: formValue.duree as number,
       budget: formValue.budget as number,
-      domaine: { id: formValue.idDomaine as number, libelle: '' },
-      formateur: { id: formValue.idFormateur as number, nom: '', prenom: '', email: '', tel: 0, type: '', employeur: null },
-      participants: (formValue.participantIds ?? []).map((participantId) => ({
+      domaine: { id: Number(formValue.idDomaine), libelle: '' },
+      formateur: { id: Number(formValue.idFormateur), nom: '', prenom: '', email: '', tel: 0, type: '', employeur: null },
+      participants: participantIds.map((participantId) => ({
         id: participantId,
         nom: '',
         prenom: '',
@@ -171,6 +174,10 @@ export class FormationFormComponent implements OnInit {
         profil: null
       }))
     };
+
+    const payload: Formation = this.isEditMode && this.formationId !== null
+      ? ({ id: this.formationId, ...basePayload } as Formation)
+      : (basePayload as Formation);
 
     const request$ = this.isEditMode && this.formationId !== null
       ? this.formationService.updateFormation(this.formationId, payload)

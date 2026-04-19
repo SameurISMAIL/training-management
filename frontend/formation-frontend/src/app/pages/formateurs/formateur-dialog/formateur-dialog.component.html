@@ -40,12 +40,35 @@
           <mat-option value="externe">Externe</mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Employeur</mat-label>
-        <mat-select formControlName="idEmployeur">
-          <mat-option *ngFor="let e of employeurs" [value]="e.id">{{ e.nomEmployeur }}</mat-option>
-        </mat-select>
-      </mat-form-field>
+
+      <div *ngIf="isExterne" class="employeur-block">
+        <div class="employeur-row">
+          <mat-form-field appearance="outline" class="employeur-field">
+            <mat-label>Employeur (société)</mat-label>
+            <mat-select formControlName="idEmployeur">
+              <mat-option *ngFor="let e of employeurs" [value]="e.id">{{ e.nomEmployeur }}</mat-option>
+            </mat-select>
+            <mat-error>Veuillez choisir une société</mat-error>
+          </mat-form-field>
+
+          <button mat-mini-fab color="primary" type="button" (click)="toggleCreateEmployeur()" matTooltip="Ajouter une société">
+            <mat-icon>{{ creatingEmployeur ? 'remove' : 'add' }}</mat-icon>
+          </button>
+        </div>
+
+        <div *ngIf="creatingEmployeur" class="employeur-create-row">
+          <mat-form-field appearance="outline" class="employeur-field">
+            <mat-label>Nouvelle société</mat-label>
+            <input matInput formControlName="nomEmployeur" placeholder="Ex: ACME Consulting">
+            <mat-error>Le nom de la société est obligatoire</mat-error>
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" type="button" (click)="createEmployeur()" [disabled]="employeurLoading">
+            <mat-icon>save</mat-icon>
+            Ajouter
+          </button>
+        </div>
+      </div>
     </div>
   </form>
 </div>

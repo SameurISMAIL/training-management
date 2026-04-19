@@ -1,8 +1,10 @@
 package com.example.demo.config;
 
 import com.example.demo.entity.Role;
+import com.example.demo.entity.Structure;
 import com.example.demo.entity.Utilisateur;
 import com.example.demo.repository.RoleRepository;
+import com.example.demo.repository.StructureRepository;
 import com.example.demo.repository.UtilisateurRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -17,6 +19,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private final RoleRepository roleRepository;
     private final UtilisateurRepository utilisateurRepository;
+    private final StructureRepository structureRepository;
 
     @Override
     public void run(String... args) {
@@ -35,5 +38,18 @@ public class DataInitializer implements CommandLineRunner {
 
             utilisateurRepository.save(admin);
         }
+
+        ensureStructureExists("Direction centrale");
+        ensureStructureExists("Direction régionale");
+    }
+
+    private void ensureStructureExists(String libelle) {
+        if (structureRepository.findByLibelleIgnoreCase(libelle).isPresent()) {
+            return;
+        }
+
+        Structure structure = new Structure();
+        structure.setLibelle(libelle);
+        structureRepository.save(structure);
     }
 }

@@ -17,16 +17,10 @@
 
 		<div class="form-grid two-cols">
 		<mat-form-field appearance="outline">
-			<mat-label>Année</mat-label>
-			<input matInput type="number" formControlName="annee" />
-			<mat-error *ngIf="anneeControl.hasError('required') && (anneeControl.touched || anneeControl.dirty)">
-				L'année est obligatoire.
-			</mat-error>
-			<mat-error *ngIf="anneeControl.hasError('min') && (anneeControl.touched || anneeControl.dirty)">
-				L'année minimale est 2000.
-			</mat-error>
-			<mat-error *ngIf="anneeControl.hasError('max') && (anneeControl.touched || anneeControl.dirty)">
-				L'année maximale est 2100.
+			<mat-label>Date de formation</mat-label>
+			<input matInput type="date" formControlName="dateFormation" />
+			<mat-error *ngIf="dateFormationControl.hasError('required') && (dateFormationControl.touched || dateFormationControl.dirty)">
+				La date de formation est obligatoire.
 			</mat-error>
 		</mat-form-field>
 

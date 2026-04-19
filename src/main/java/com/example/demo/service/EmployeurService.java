@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.entity.Employeur;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.EmployeurRepository;
+import com.example.demo.repository.FormateurRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.List;
 public class EmployeurService {
 
     private final EmployeurRepository employeurRepository;
+    private final FormateurRepository formateurRepository;
 
     public List<Employeur> getAllEmployeurs() {
         List<Employeur> employeurs = employeurRepository.findAll();
@@ -43,6 +45,11 @@ public class EmployeurService {
     public void deleteEmployeur(Integer id) {
         Employeur existing = employeurRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employeur introuvable avec l'id " + id));
+
+        if (formateurRepository.existsByEmployeur_Id(id)) {
+            throw new IllegalStateException("Impossible de supprimer cet employeur car il est deja utilise par un ou plusieurs formateurs");
+        }
+
         employeurRepository.delete(existing);
     }
 }

@@ -49,7 +49,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
   styleUrl: './formation-list.component.css'
 })
 export class FormationListComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['titre', 'annee', 'duree', 'domaine', 'budget', 'actions'];
+  displayedColumns: string[] = ['titre', 'dateFormation', 'duree', 'domaine', 'budget', 'actions'];
   dataSource = new MatTableDataSource<Formation>([]);
   loading = false;
   formations: Formation[] = [];
@@ -72,7 +72,7 @@ export class FormationListComponent implements OnInit, AfterViewInit {
       const search = filter.trim().toLowerCase();
       const searchableText = [
         data.titre,
-        data.annee,
+        data.dateFormation,
         data.duree,
         data.budget,
         data.domaine?.libelle,
@@ -221,8 +221,9 @@ export class FormationListComponent implements OnInit, AfterViewInit {
             });
             this.loadFormations();
           },
-          error: () => {
-            this.snackBar.open('Erreur lors de la suppression', 'Fermer', {
+          error: (err) => {
+            const message = err?.error?.message || 'Erreur lors de la suppression';
+            this.snackBar.open(message, 'Fermer', {
               duration: 4000,
               panelClass: ['error-snack']
             });
