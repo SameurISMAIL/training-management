@@ -30,12 +30,7 @@ export const routes: Routes = [
 	{ path: 'users', component: AdminUsersComponent, canActivate: [roleGuard], data: { roles: ['ROLE_ADMIN', 'ADMIN', 'administrateur'] } },
 	{ path: 'admin/users', component: AdminUsersComponent, canActivate: [roleGuard], data: { roles: ['ROLE_ADMIN', 'ADMIN', 'administrateur'] } },
 	{ path: 'admin', redirectTo: 'admin/domaines', pathMatch: 'full' },
-	{
-		path: 'statistiques',
-		component: StatistiqueComponent,
-		canActivate: [roleGuard],
-		data: { roles: ['ROLE_RESPONSABLE', 'RESPONSABLE', 'responsable', 'ROLE_ADMIN', 'ADMIN', 'administrateur'] }
-	},
+	{ path: 'statistiques', component: StatistiqueComponent, canActivate: [roleGuard], data: { roles: ['ROLE_RESPONSABLE', 'RESPONSABLE', 'responsable', 'ROLE_ADMIN', 'ADMIN', 'administrateur'] }},
 	{ path: 'unauthorized', component: UnauthorizedComponent },
 	{ path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 	{ path: '**', redirectTo: 'dashboard' }

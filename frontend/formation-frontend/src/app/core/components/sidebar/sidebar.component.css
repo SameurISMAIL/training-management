@@ -16,13 +16,20 @@
 }
 
 .logo-icon {
-  color: var(--primary);
-  font-size: 40px;
-  width: 40px;
-  height: 40px;
+  color: #ffffff;
+  font-size: 22px;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo-text {
+  font-family: 'Syne', 'DM Sans', sans-serif;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -47,7 +54,7 @@
   align-items: center;
   column-gap: 12px;
   padding: 12px 20px;
-  border-radius: 0;
+  border-radius: 8px;
   width: 100%;
   color: var(--text-secondary);
   font-size: 14px;
@@ -57,6 +64,8 @@
   text-decoration: none;
   border-left: 3px solid transparent;
   box-sizing: border-box;
+  margin: 0 8px 2px;
+  width: calc(100% - 16px);
 }
 
 .nav-link mat-icon {
@@ -77,9 +86,14 @@
 
 .nav-link.active-link {
   border-left: 3px solid var(--primary);
-  background: var(--primary-light);
+  background: rgba(59, 130, 246, 0.14);
   color: var(--primary);
   font-weight: 600;
+}
+
+.nav-link:hover {
+  background: var(--surface-alt);
+  color: var(--text-primary);
 }
 
 .nav-link.hidden {
@@ -90,7 +104,7 @@
   margin-top: auto;
   padding: 16px 20px;
   border-top: 1px solid var(--divider);
-  background: var(--app-bg);
+  background: transparent;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -100,8 +114,8 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--primary-light);
-  color: var(--primary);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;

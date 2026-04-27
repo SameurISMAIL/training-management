@@ -53,8 +53,7 @@ export class NavbarComponent {
       return;
     }
 
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    this.setDarkMode(prefersDark);
+    this.setDarkMode(true);
   }
 
   private setDarkMode(enabled: boolean): void {

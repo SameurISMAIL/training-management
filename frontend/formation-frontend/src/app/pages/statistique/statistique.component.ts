@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartData, ChartOptions, registerables } from 'chart.js';
-import { forkJoin } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 
 import { FormateurTypeItem, StatBudgetItem, StatCountItem, StatistiqueService } from '../../core/services/statistique.service';
 
@@ -21,6 +21,7 @@ Chart.register(...registerables);
 })
 export class StatistiqueComponent implements OnInit {
   selectedSection: 'formations' | 'participants' | 'budget' | 'formateurs' | null = null;
+  activeVoirToutPopup: 'formationsByFormateurList' | 'formateursTable' | null = null;
   loading = true;
   errorMessage = '';
 
@@ -28,6 +29,11 @@ export class StatistiqueComponent implements OnInit {
   totalParticipants = 0;
   totalFormateurs = 0;
   totalBudget = 0;
+
+  formationsGrowthPct = 0;
+  participantsGrowthPct = 0;
+  formateursGrowthPct = 0;
+  budgetGrowthPct = 0;
 
   participantsByAnnee: StatCountItem[] = [];
   budgetByAnnee: StatBudgetItem[] = [];
@@ -56,6 +62,21 @@ export class StatistiqueComponent implements OnInit {
     datasets: [{ data: [], label: 'Participants par structure', backgroundColor: '#06b6d4' }]
   };
 
+  participantsByYearData: ChartData<'bar'> = {
+    labels: [],
+    datasets: [{ data: [], label: 'Participants par annee', backgroundColor: '#34d399' }]
+  };
+
+  budgetByYearData: ChartData<'bar'> = {
+    labels: [],
+    datasets: [{ data: [], label: 'Budget par annee', backgroundColor: '#fb923c' }]
+  };
+
+  participantsByDomaineDataChart: ChartData<'pie'> = {
+    labels: [],
+    datasets: [{ data: [], backgroundColor: ['#4f46e5', '#34d399', '#f59e0b', '#f43f5e', '#8b5cf6', '#0ea5e9', '#14b8a6'] }]
+  };
+
   formateursTypeData: ChartData<'doughnut'> = {
     labels: [],
     datasets: [{ data: [], backgroundColor: ['#10b981', '#f97316', '#64748b'] }]
@@ -78,13 +99,41 @@ export class StatistiqueComponent implements OnInit {
     }
   };
 
+  barCompactOptions: ChartOptions<'bar'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: {
+        grid: { display: false }
+      },
+      y: {
+        beginAtZero: true,
+        ticks: { precision: 0 },
+        grid: { color: 'rgba(148, 163, 184, 0.18)' }
+      }
+    }
+  };
+
   pieOptions: ChartOptions<'pie'> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: { legend: { position: 'bottom' } }
   };
 
+  pieCompactOptions: ChartOptions<'pie'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } }
+  };
+
   doughnutOptions: ChartOptions<'doughnut'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom' } }
+  };
+
+  doughnutCompactOptions: ChartOptions<'doughnut'> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: { legend: { position: 'bottom' } }
@@ -100,6 +149,22 @@ export class StatistiqueComponent implements OnInit {
         ticks: {
           precision: 0
         }
+      }
+    }
+  };
+
+  lineCompactOptions: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: {
+        grid: { display: false }
+      },
+      y: {
+        beginAtZero: true,
+        ticks: { precision: 0 },
+        grid: { color: 'rgba(148, 163, 184, 0.18)' }
       }
     }
   };
@@ -121,6 +186,7 @@ export class StatistiqueComponent implements OnInit {
       byAnnee: this.statistiqueService.getFormationsByAnnee(),
       byMois: this.statistiqueService.getFormationsByMois(),
       formateursRepartition: this.statistiqueService.getFormateursRepartition(),
+      formateursByAnnee: this.statistiqueService.getFormateursByAnnee().pipe(catchError(() => of([] as StatCountItem[]))),
       participantsByAnnee: this.statistiqueService.getParticipantsByAnnee(),
       budgetByAnnee: this.statistiqueService.getBudgetByAnnee(),
       participantsByDomaine: this.statistiqueService.getParticipantsByDomaine(),
@@ -155,6 +221,27 @@ export class StatistiqueComponent implements OnInit {
         this.topFormations = result.topFormations;
         this.averageParticipantsPerFormation = result.averageParticipantsPerFormation;
         this.mostActiveParticipants = result.mostActiveParticipants;
+
+        this.participantsByYearData = {
+          labels: this.participantsByAnnee.map((item) => item.label),
+          datasets: [{ data: this.participantsByAnnee.map((item) => item.count), label: 'Participants par annee', backgroundColor: '#34d399' }]
+        };
+
+        this.budgetByYearData = {
+          labels: this.budgetByAnnee.map((item) => item.label),
+          datasets: [{ data: this.budgetByAnnee.map((item) => item.budget), label: 'Budget par annee', backgroundColor: '#fb923c' }]
+        };
+
+        this.participantsByDomaineDataChart = {
+          labels: this.participantsByDomaine.map((item) => item.label),
+          datasets: [{ data: this.participantsByDomaine.map((item) => item.count), backgroundColor: ['#4f46e5', '#34d399', '#f59e0b', '#f43f5e', '#8b5cf6', '#0ea5e9', '#14b8a6'] }]
+        };
+
+        this.formationsGrowthPct = this.computeYearOverYearGrowth(result.byAnnee.map((item) => item.count));
+        this.participantsGrowthPct = this.computeYearOverYearGrowth(result.participantsByAnnee.map((item) => item.count));
+        this.budgetGrowthPct = this.computeYearOverYearGrowth(result.budgetByAnnee.map((item) => item.budget));
+        this.formateursGrowthPct = this.computeYearOverYearGrowth(result.formateursByAnnee.map((item) => item.count));
+
         this.loading = false;
       },
       error: () => {
@@ -234,7 +321,75 @@ export class StatistiqueComponent implements OnInit {
     return this.budgetByFormation.reduce((max, item) => Math.max(max, item.budget), 0);
   }
 
+  domaineColorAt(index: number): string {
+    const palette = ['#4f46e5', '#34d399', '#f59e0b', '#f43f5e', '#8b5cf6', '#0ea5e9', '#14b8a6'];
+    return palette[index % palette.length];
+  }
+
+  formationDomainPercentageAt(index: number): number {
+    const total = this.formationsByDomaineData.datasets[0]?.data.reduce((sum, value) => sum + Number(value), 0) || 0;
+    const value = Number(this.formationsByDomaineData.datasets[0]?.data[index] || 0);
+    return total ? Math.round((value / total) * 100) : 0;
+  }
+
+  participantsDomainPercentageAt(index: number): number {
+    const total = this.participantsByDomaine.reduce((sum, item) => sum + item.count, 0);
+    const value = this.participantsByDomaine[index]?.count || 0;
+    return total ? Math.round((value / total) * 100) : 0;
+  }
+
+  growthClass(value: number): 'positive' | 'negative' | 'neutral' {
+    if (value > 0) {
+      return 'positive';
+    }
+
+    if (value < 0) {
+      return 'negative';
+    }
+
+    return 'neutral';
+  }
+
+  growthIcon(value: number): 'arrow_upward' | 'arrow_downward' | 'trending_flat' {
+    if (value > 0) {
+      return 'arrow_upward';
+    }
+
+    if (value < 0) {
+      return 'arrow_downward';
+    }
+
+    return 'trending_flat';
+  }
+
+  growthAbs(value: number): number {
+    return Math.abs(value);
+  }
+
+  private computeYearOverYearGrowth(values: number[]): number {
+    if (values.length < 2) {
+      return 0;
+    }
+
+    const previous = Number(values[values.length - 2] ?? 0);
+    const current = Number(values[values.length - 1] ?? 0);
+
+    if (previous === 0) {
+      return current > 0 ? 100 : 0;
+    }
+
+    return Number((((current - previous) / previous) * 100).toFixed(1));
+  }
+
   selectSection(section: 'formations' | 'participants' | 'budget' | 'formateurs'): void {
     this.selectedSection = this.selectedSection === section ? null : section;
+  }
+
+  openVoirToutPopup(target: 'formationsByFormateurList' | 'formateursTable'): void {
+    this.activeVoirToutPopup = target;
+  }
+
+  closeVoirToutPopup(): void {
+    this.activeVoirToutPopup = null;
   }
 }

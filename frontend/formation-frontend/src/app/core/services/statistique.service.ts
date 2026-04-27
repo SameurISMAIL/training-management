@@ -103,6 +103,15 @@ export class StatistiqueService {
     );
   }
 
+  getFormateursByAnnee(): Observable<StatCountItem[]> {
+    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/annee/formateurs`).pipe(
+      map((items) => items.map((item) => ({
+        label: String(item['annee'] ?? ''),
+        count: Number(item['count'] ?? 0)
+      })))
+    );
+  }
+
   getBudgetByAnnee(): Observable<StatBudgetItem[]> {
     return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/annee/budget`).pipe(
       map((items) => items.map((item) => ({
