@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "formation-frontend": {
+    "gestion-de-formations": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/formation-frontend",
+            "outputPath": "dist/gestion-de-formations",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -57,19 +57,19 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "formation-frontend:build:production"
+              "buildTarget": "gestion-de-formations:build:production"
             },
             "development": {
-              "buildTarget": "formation-frontend:build:development"
+              "buildTarget": "gestion-de-formations:build:development"
             }
           },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "buildTarget": "formation-frontend:build"
-          }
+            "options": {
+              "buildTarget": "gestion-de-formations:build"
+            }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",

@@ -14,16 +14,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'formation-frontend' title`, () => {
+  it(`should have the 'Gestion de formations' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('formation-frontend');
+    expect((app as any).title).toEqual('Gestion de formations');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, formation-frontend');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, Gestion de formations');
   });
 });
