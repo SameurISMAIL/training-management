@@ -21,6 +21,13 @@
       </div>
     </div>
 
+    <div class="global-year-selector" *ngIf="selectedSection === null">
+      <label for="globalYearSelect">Sélectionner l'année:</label>
+      <select id="globalYearSelect" [(ngModel)]="selectedGlobalYear" (change)="onGlobalYearChange()" class="year-select">
+        <option *ngFor="let year of availableGlobalYears" [value]="year">{{ year }}</option>
+      </select>
+    </div>
+
     <div class="stats-summary-grid">
       <div class="summary-card formation">
         <div class="card-icon-container">
@@ -75,37 +82,168 @@
       </div>
     </div>
 
-    <div class="stats-section">
+    <div class="what-if-section" *ngIf="selectedSection === null">
+      <ng-container *ngIf="simulationResult$ | async as simulation">
+      <mat-card class="what-if-card">
+        <mat-card-content>
+          <form class="what-if-layout" [formGroup]="simulationForm">
+            <div class="what-if-column left">
+              <div class="what-if-control">
+                <div class="what-if-control-copy">
+                  <p class="what-if-control-title">Si nous modifions le nombre de formations :</p>
+                  <div class="what-if-control-percent">{{ simulation.formations.deltaPercent | number:'1.0-2' }}%</div>
+                </div>
+                <mat-slider class="what-if-slider" min="0" max="200" step="1" discrete>
+                  <input matSliderThumb formControlName="formations" />
+                </mat-slider>
+                <div class="what-if-control-note">Impact par rapport à l'année {{ selectedGlobalYear }} : {{ simulation.formations.simulated | number:'1.0-0' }} formations</div>
+              </div>
+
+              <div class="what-if-control">
+                <div class="what-if-control-copy">
+                  <p class="what-if-control-title">Si nous modifions le nombre moyen de participants :</p>
+                  <div class="what-if-control-percent">{{ simulation.participants.deltaPercent | number:'1.0-2' }}%</div>
+                </div>
+                <mat-slider class="what-if-slider" min="0" max="100" step="0.5" discrete>
+                  <input matSliderThumb formControlName="averageParticipantsPerFormation" />
+                </mat-slider>
+                <div class="what-if-control-note">Impact par rapport à l'année {{ selectedGlobalYear }} : {{ simulation.participants.simulated | number:'1.0-0' }} participants</div>
+              </div>
+            </div>
+
+            <div class="what-if-center">
+              <div class="what-if-orb">
+                <span>Et</span>
+                <strong>SI ?</strong>
+              </div>
+            </div>
+
+            <div class="what-if-column right">
+              <div class="what-if-control">
+                <div class="what-if-control-copy align-right">
+                  <p class="what-if-control-title">Si nous modifions le coût unitaire :</p>
+                  <div class="what-if-control-percent">{{ simulation.budget.deltaPercent | number:'1.0-2' }}%</div>
+                </div>
+                <mat-slider class="what-if-slider" min="0" max="20000" step="50" discrete>
+                  <input matSliderThumb formControlName="costPerFormation" />
+                </mat-slider>
+                <div class="what-if-control-note align-right">Impact par rapport à l'année {{ selectedGlobalYear }} : {{ simulation.budget.simulated | number:'1.0-0' }} TND</div>
+              </div>
+
+              <div class="what-if-control">
+                <div class="what-if-control-copy align-right">
+                  <p class="what-if-control-title">Si nous modifions le nombre de formateurs :</p>
+                  <div class="what-if-control-percent">{{ simulation.formateurs.deltaPercent | number:'1.0-2' }}%</div>
+                </div>
+                <mat-slider class="what-if-slider" min="0" max="100" step="1" discrete>
+                  <input matSliderThumb formControlName="trainers" />
+                </mat-slider>
+                <div class="what-if-control-note align-right">Impact par rapport à l'année {{ selectedGlobalYear }} : {{ simulation.formateurs.simulated | number:'1.0-0' }} formateurs</div>
+              </div>
+            </div>
+          </form>
+
+          <div class="what-if-results-grid">
+            <mat-card class="what-if-metric-card formation">
+              <span class="what-if-metric-label">Formations simulées</span>
+              <strong class="what-if-metric-value">{{ simulation.formations.simulated | number:'1.0-0' }}</strong>
+              <span class="what-if-metric-real">Réel: {{ simulation.formations.real | number:'1.0-0' }}</span>
+              <span class="what-if-metric-delta" [ngClass]="growthClass(simulation.formations.deltaPercent)">
+                {{ simulation.formations.deltaPercent > 0 ? '+' : '' }}{{ simulation.formations.deltaPercent | number:'1.0-1' }}% vs année {{ selectedGlobalYear }}
+              </span>
+            </mat-card>
+
+            <mat-card class="what-if-metric-card participant">
+              <span class="what-if-metric-label">Participants simulés</span>
+              <strong class="what-if-metric-value">{{ simulation.participants.simulated | number:'1.0-0' }}</strong>
+              <span class="what-if-metric-real">Réel: {{ simulation.participants.real | number:'1.0-0' }}</span>
+              <span class="what-if-metric-delta" [ngClass]="growthClass(simulation.participants.deltaPercent)">
+                {{ simulation.participants.deltaPercent > 0 ? '+' : '' }}{{ simulation.participants.deltaPercent | number:'1.0-1' }}% vs année {{ selectedGlobalYear }}
+              </span>
+            </mat-card>
+
+            <mat-card class="what-if-metric-card budget">
+              <span class="what-if-metric-label">Budget simulé</span>
+              <strong class="what-if-metric-value">{{ simulation.budget.simulated | number:'1.0-0' }} TND</strong>
+              <span class="what-if-metric-real">Réel: {{ simulation.budget.real | number:'1.0-0' }} TND</span>
+              <span class="what-if-metric-delta" [ngClass]="growthClass(simulation.budget.deltaPercent)">
+                {{ simulation.budget.deltaPercent > 0 ? '+' : '' }}{{ simulation.budget.deltaPercent | number:'1.0-1' }}% vs année {{ selectedGlobalYear }}
+              </span>
+            </mat-card>
+
+            <mat-card class="what-if-metric-card trainer">
+              <span class="what-if-metric-label">Formateurs simulés</span>
+              <strong class="what-if-metric-value">{{ simulation.formateurs.simulated | number:'1.0-0' }}</strong>
+              <span class="what-if-metric-real">Réel: {{ simulation.formateurs.real | number:'1.0-0' }}</span>
+              <span class="what-if-metric-delta" [ngClass]="growthClass(simulation.formateurs.deltaPercent)">
+                {{ simulation.formateurs.deltaPercent > 0 ? '+' : '' }}{{ simulation.formateurs.deltaPercent | number:'1.0-1' }}% vs année {{ selectedGlobalYear }}
+              </span>
+            </mat-card>
+          </div>
+
+          <div class="what-if-note">
+            Les données réelles restent intactes. La simulation se met à jour instantanément et montre l'écart par rapport à l'année sélectionnée.
+          </div>
+        </mat-card-content>
+      </mat-card>
+      </ng-container>
+    </div>
+
+    <div class="stats-section" id="formations" *ngIf="showSection('formations')">
       <div class="section-header">
         <h2 class="section-title">Formations</h2>
       </div>
 
       <div class="formations-grid">
-        <mat-card class="chart-card">
+        <mat-card class="chart-card formations-annee-card span-3">
           <mat-card-header>
-            <mat-card-title>Formations par annee</mat-card-title>
+            <div class="chart-title-with-subtitle">
+              <mat-card-title>Formations par annee</mat-card-title>
+              <span class="chart-subtitle">Évolution temporelle</span>
+            </div>
           </mat-card-header>
           <mat-card-content>
             <div class="chart-container compact">
-              <canvas baseChart [data]="formationsByYearData" [type]="'bar'" [options]="barCompactOptions"></canvas>
+              <canvas baseChart [data]="formationsByYearData" [type]="'line'" [options]="formationsByYearLineOptions"></canvas>
             </div>
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="chart-card">
+        <mat-card class="chart-card formations-domaine-card span-3">
           <mat-card-header>
-            <mat-card-title>Formations par domaine</mat-card-title>
+            <div class="domaine-header">
+              <mat-card-title>Formations par domaine</mat-card-title>
+              <span class="domaine-subtitle">Top 5 domaines + Autres</span>
+            </div>
           </mat-card-header>
           <mat-card-content>
-            <div class="pie-split-layout">
-              <div class="chart-container pie-small">
+            <div class="domaine-snapshot-layout">
+              <div class="domaine-left">
+                <div class="chart-container pie-small domaine-pie">
                 <canvas baseChart [data]="formationsByDomaineData" [type]="'pie'" [options]="pieCompactOptions"></canvas>
+                </div>
+                <div class="domain-legend compact">
+                  <div class="legend-row" *ngFor="let item of formationsByDomaineTopWithAutres; let i = index">
+                    <span class="legend-dot square" [style.background]="formationDomainColorAt(i)"></span>
+                    <span class="legend-label">{{ item.label }}</span>
+                    <span class="legend-percentage">{{ formationDomainPercentageAt(i) }}%</span>
+                  </div>
+                </div>
               </div>
-              <div class="domain-legend">
-                <div class="legend-row" *ngFor="let item of formationsByDomaineData.labels; let i = index">
-                  <span class="legend-dot" [style.background]="domaineColorAt(i)"></span>
-                  <span class="legend-label">{{ item }}</span>
-                  <span class="legend-value">{{ formationDomainPercentageAt(i) }}%</span>
+
+              <div class="domaine-divider"></div>
+
+              <div class="domaine-right">
+                <div class="autres-title-row">
+                  <span class="legend-dot" [style.background]="formationDomainColorAt(formationsByDomaineTopWithAutres.length - 1)"></span>
+                  <span class="autres-title">Autres ({{ formationsByDomaineAutresTotal }})</span>
+                </div>
+
+                <div class="autres-list">
+                  <div class="autres-item" *ngFor="let item of formationsByDomaineAutresDetails">
+                    <span class="autres-label">{{ item.label }}</span>
+                    <span class="autres-value">{{ item.count }} ({{ getAutresItemPercentage(item.count) }}%)</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -156,7 +294,7 @@
           </mat-card-content>
         </mat-card>
 
-        <mat-card class="chart-card">
+        <mat-card class="chart-card span-3">
           <mat-card-header>
             <mat-card-title>Evolution mensuelle des formations</mat-card-title>
           </mat-card-header>
@@ -169,7 +307,7 @@
       </div>
     </div>
 
-    <div class="stats-section">
+    <div class="stats-section" id="participants" *ngIf="showSection('participants')">
       <div class="section-header">
         <h2 class="section-title">Participants</h2>
       </div>
@@ -209,37 +347,80 @@
         <mat-card class="chart-card span-2">
           <mat-card-header><mat-card-title>Participants par domaine</mat-card-title></mat-card-header>
           <mat-card-content>
-            <div class="pie-split-layout">
-              <div class="chart-container pie-small">
-                <canvas baseChart [data]="participantsByDomaineDataChart" [type]="'pie'" [options]="pieCompactOptions"></canvas>
-              </div>
-              <div class="domain-legend">
-                <div class="legend-row" *ngFor="let item of participantsByDomaine; let i = index">
-                  <span class="legend-dot" [style.background]="domaineColorAt(i)"></span>
-                  <span class="legend-label">{{ item.label }}</span>
-                  <span class="legend-value">{{ participantsDomainPercentageAt(i) }}%</span>
+            <div class="domaine-snapshot-layout participants-domaine-layout">
+              <div class="domaine-left">
+                <div class="chart-container pie-small domaine-pie">
+                  <canvas baseChart [data]="participantsByDomaineDataChart" [type]="'pie'" [options]="pieCompactOptions"></canvas>
                 </div>
+                <div class="domain-legend compact">
+                  <div class="legend-row" *ngFor="let item of participantsByDomaineTopWithAutres; let i = index">
+                    <span class="legend-dot square" [style.background]="participantsDomainColorAt(i)"></span>
+                    <span class="legend-label">{{ item.label }}</span>
+                    <span class="legend-value">{{ participantsDomainPercentageAt(i) }}%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="domaine-divider"></div>
+
+              <div class="domaine-right">
+                <div class="autres-title-row">
+                  <span class="legend-dot" [style.background]="participantsDomainColorAt(participantsByDomaineTopWithAutres.length - 1)"></span>
+                  <span class="autres-title">Autres ({{ participantsByDomaineAutresTotal }})</span>
+                </div>
+
+                <div class="autres-list" *ngIf="participantsByDomaineAutresDetails.length > 0; else noOtherParticipantsDomains">
+                  <div class="autres-item" *ngFor="let item of participantsByDomaineAutresDetails">
+                    <span class="autres-label">{{ item.label }}</span>
+                    <span class="autres-count">{{ item.count }} ({{ getAutresParticipantPercentage(item.count) }}%)</span>
+                  </div>
+                </div>
+
+                <ng-template #noOtherParticipantsDomains>
+                  <div class="empty-domain-note">Aucun domaine supplémentaire à afficher.</div>
+                </ng-template>
               </div>
             </div>
           </mat-card-content>
         </mat-card>
 
         <mat-card class="detail-card average-card">
-          <mat-card-header><mat-card-title>Moyenne participants / formation</mat-card-title></mat-card-header>
-          <mat-card-content>
-            <div class="average-box">
-              <div class="average-main-row">
-                <p class="highlight-number">{{ averageParticipantsPerFormation | number:'1.1-2' }}</p>
-                <mat-icon>groups</mat-icon>
+          <mat-card-header class="average-card-header">
+            <mat-card-title>Moyenne participants / formation</mat-card-title>
+            <div class="average-header-icon">
+              <mat-icon>insert_chart_outlined</mat-icon>
+            </div>
+          </mat-card-header>
+
+          <mat-card-content class="average-card-content">
+            <div class="average-card-shell">
+              <div class="average-hero-row">
+                <div class="average-avatar">
+                  <mat-icon>groups</mat-icon>
+                </div>
+
+                <div class="average-metric-block">
+                  <p class="highlight-number">{{ averageParticipantsPerFormation | number:'1.1-2' }}</p>
+                  <div class="average-progress-track">
+                    <div class="average-progress-fill"></div>
+                  </div>
+                </div>
               </div>
-              <p class="summary-change positive"><mat-icon>arrow_upward</mat-icon>6% vs annee derniere</p>
+
+              <div class="average-footer-row">
+                <div class="average-badge positive">
+                  <mat-icon>trending_up</mat-icon>
+                  <span>6%</span>
+                </div>
+                <p class="average-caption">vs année dernière</p>
+              </div>
             </div>
           </mat-card-content>
         </mat-card>
       </div>
     </div>
 
-    <div class="stats-section">
+    <div class="stats-section" id="budget" *ngIf="showSection('budget')">
       <div class="section-header">
         <h2 class="section-title">Budget</h2>
       </div>
@@ -253,7 +434,6 @@
                 <div class="budget-head">
                   <span class="budget-label">{{ item.label }}</span>
                   <span class="budget-value">{{ item.budget | number:'1.0-0' }} TND</span>
-                  <span class="budget-percent">{{ budgetByDomaineMax ? ((item.budget / budgetByDomaineMax) * 100 | number:'1.0-0') : 0 }}%</span>
                 </div>
                 <div class="budget-track"><div class="budget-fill" [style.width.%]="budgetByDomaineMax ? (item.budget / budgetByDomaineMax) * 100 : 0"></div></div>
               </div>
@@ -269,7 +449,6 @@
                 <div class="budget-head">
                   <span class="budget-label">{{ item.label }}</span>
                   <span class="budget-value">{{ item.budget | number:'1.0-0' }} TND</span>
-                  <span class="budget-percent">{{ budgetByFormationMax ? ((item.budget / budgetByFormationMax) * 100 | number:'1.0-0') : 0 }}%</span>
                 </div>
                 <div class="budget-track"><div class="budget-fill amber" [style.width.%]="budgetByFormationMax ? (item.budget / budgetByFormationMax) * 100 : 0"></div></div>
               </div>
@@ -288,9 +467,81 @@
       </div>
     </div>
 
-    <div class="stats-section">
+    <div class="stats-section" id="formateurs" *ngIf="showSection('formateurs')">
       <div class="section-header">
         <h2 class="section-title">Formateurs</h2>
+      </div>
+
+      <div class="formateurs-grid-split">
+        <mat-card class="detail-card">
+          <mat-card-header>
+            <mat-card-title>Formations réalisées par formateurs internes</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="metric-list">
+              <div class="metric-row simple with-dot" *ngFor="let item of topFormationsInternes | slice:0:10">
+                <span class="metric-dot" style="background: #10b981;"></span>
+                <span class="metric-label">{{ item.label }}</span>
+                <span class="metric-value">{{ item.count }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="detail-card">
+          <mat-card-header>
+            <mat-card-title>Formations réalisées par formateurs externes</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="metric-list">
+              <div class="metric-row simple with-dot" *ngFor="let item of topFormationsExternes | slice:0:10">
+                <span class="metric-dot" style="background: #f97316;"></span>
+                <span class="metric-label">{{ item.label }}</span>
+                <span class="metric-value">{{ item.count }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="formateurs-grid-split">
+        <mat-card class="detail-card">
+          <mat-card-header>
+            <mat-card-title>Top 5 formateurs internes</mat-card-title>
+            <mat-icon class="title-icon" style="color: #10b981;">person</mat-icon>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="formateurs-list top5">
+              <div class="formateur-row" *ngFor="let item of topFormateursInternes; let i = index">
+                <div class="formateur-head">
+                  <span class="rank-badge-green">{{ i + 1 }}</span>
+                  <span class="formateur-label">{{ item.label }}</span>
+                  <span class="formateur-value">{{ item.count }}</span>
+                </div>
+                <div class="formateur-track"><div class="formateur-fill-green" [style.width.%]="topFormateursInternMax > 0 ? (item.count / topFormateursInternMax) * 100 : 0"></div></div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="detail-card">
+          <mat-card-header>
+            <mat-card-title>Top 5 formateurs externes</mat-card-title>
+            <mat-icon class="title-icon" style="color: #f97316;">apartment</mat-icon>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="formateurs-list top5">
+              <div class="formateur-row" *ngFor="let item of topFormateursExternes; let i = index">
+                <div class="formateur-head">
+                  <span class="rank-badge-gold">{{ i + 1 }}</span>
+                  <span class="formateur-label">{{ item.label }}</span>
+                  <span class="formateur-value">{{ item.count }}</span>
+                </div>
+                <div class="formateur-track"><div class="formateur-fill-orange" [style.width.%]="topFormateursExternMax > 0 ? (item.count / topFormateursExternMax) * 100 : 0"></div></div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
       </div>
 
       <div class="formateurs-grid">
@@ -299,6 +550,30 @@
           <mat-card-content>
             <div class="chart-container compact">
               <canvas baseChart [data]="formateursTypeData" [type]="'doughnut'" [options]="doughnutCompactOptions"></canvas>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="detail-card">
+          <mat-card-header>
+            <mat-card-title>Top 10 formateurs les plus actifs</mat-card-title>
+            <select [(ngModel)]="selectedYearForFormateurs" class="year-selector">
+              <option value="">Toutes les années</option>
+              <option *ngFor="let year of availableYearsForFormateurs" [value]="year">
+                {{ year }}
+              </option>
+            </select>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="formateurs-list">
+              <div class="formateur-row" *ngFor="let item of getSelectedYearFormateurs(); let i = index">
+                <div class="formateur-head">
+                  <span class="rank-badge">{{ i + 1 }}</span>
+                  <span class="formateur-label">{{ item.formateur }}</span>
+                  <span class="formateur-value">{{ item.count }}</span>
+                </div>
+                <div class="formateur-track"><div class="formateur-fill" [style.width.%]="getMaxFormateurCount() ? (item.count / getMaxFormateurCount()) * 100 : 0"></div></div>
+              </div>
             </div>
           </mat-card-content>
         </mat-card>

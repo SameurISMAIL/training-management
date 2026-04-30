@@ -18,6 +18,26 @@
     </a>
   </div>
 
+  <ng-container *ngIf="authService.hasAnyRole(['ROLE_RESPONSABLE', 'RESPONSABLE', 'ROLE_ADMIN', 'ADMIN'])">
+    <div class="nav-section-title">Statistiques</div>
+    <div class="nav-list stats-nav-list">
+      <a class="nav-link stats-parent-link" [routerLink]="['/statistiques']" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }" (click)="onNavigate()">
+        <mat-icon>bar_chart</mat-icon>
+        <span>Vue globale</span>
+      </a>
+
+      <a
+        *ngFor="let item of statsNavItems"
+        class="nav-link stats-child-link"
+        [routerLink]="item.route"
+        routerLinkActive="active-link"
+        (click)="onNavigate()">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
+      </a>
+    </div>
+  </ng-container>
+
   <ng-container *ngIf="authService.isAdmin()">
     <div class="nav-section-title">Administration</div>
     <div class="nav-list">

@@ -190,6 +190,57 @@ export class StatistiqueService {
     );
   }
 
+  getTopFormateursByAnnee(): Observable<Record<string, Array<{ formateur: string; count: number }>>> {
+    return this.http.get<Record<string, Array<Record<string, unknown>>>>(`${this.apiUrl}/avancees/top-formateurs`).pipe(
+      map((response) => {
+        const result: Record<string, Array<{ formateur: string; count: number }>> = {};
+        for (const [key, items] of Object.entries(response)) {
+          result[key] = items.map((item) => ({
+            formateur: String(item['formateur'] ?? 'Inconnu'),
+            count: Number(item['count'] ?? 0)
+          }));
+        }
+        return result;
+      })
+    );
+  }
+
+  getTopFormationsInternes(): Observable<StatCountItem[]> {
+    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/formations/interne`).pipe(
+      map((items) => items.map((item) => ({
+        label: String(item['formation'] ?? 'Sans titre'),
+        count: Number(item['count'] ?? 0)
+      })))
+    );
+  }
+
+  getTopFormationsExternes(): Observable<StatCountItem[]> {
+    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/formations/externe`).pipe(
+      map((items) => items.map((item) => ({
+        label: String(item['formation'] ?? 'Sans titre'),
+        count: Number(item['count'] ?? 0)
+      })))
+    );
+  }
+
+  getTopFormateursInternes(): Observable<StatCountItem[]> {
+    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/formateurs/top-internes`).pipe(
+      map((items) => items.map((item) => ({
+        label: String(item['formateur'] ?? 'Inconnu'),
+        count: Number(item['count'] ?? 0)
+      })))
+    );
+  }
+
+  getTopFormateursExternes(): Observable<StatCountItem[]> {
+    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/formateurs/top-externes`).pipe(
+      map((items) => items.map((item) => ({
+        label: String(item['formateur'] ?? 'Inconnu'),
+        count: Number(item['count'] ?? 0)
+      })))
+    );
+  }
+
   getBudgetTotal(): Observable<number> {
     return this.getGlobalStats().pipe(
       map((response) => Number(response.budgetTotal ?? 0))

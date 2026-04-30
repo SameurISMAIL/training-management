@@ -46,6 +46,11 @@ public class StatistiqueController {
         return ResponseEntity.ok(mapStats(formationRepository.countParticipantsByAnnee(), "annee", "count"));
     }
 
+    @GetMapping("/annee/formateurs")
+    public ResponseEntity<List<Map<String, Object>>> countFormateursByAnnee() {
+        return ResponseEntity.ok(mapStats(formationRepository.countFormateursByAnnee(), "annee", "count"));
+    }
+
     @GetMapping("/annee/budget")
     public ResponseEntity<List<Map<String, Object>>> sumBudgetByAnnee() {
         return ResponseEntity.ok(mapStats(formationRepository.sumBudgetByAnnee(), "annee", "budget"));
@@ -128,6 +133,53 @@ public class StatistiqueController {
     public ResponseEntity<List<Map<String, Object>>> mostActiveParticipants() {
         List<Map<String, Object>> mapped = mapStats(participantRepository.mostActiveParticipants(), "participant", "count");
         return ResponseEntity.ok(mapped.stream().limit(10).collect(Collectors.toList()));
+    }
+
+    @GetMapping("/avancees/top-formateurs")
+    public ResponseEntity<Map<Integer, List<Map<String, Object>>>> topFormateursByAnnee() {
+        List<Object[]> results = formationRepository.topFormateursByAnnee();
+        Map<Integer, List<Map<String, Object>>> grouped = new LinkedHashMap<>();
+        
+        for (Object[] row : results) {
+            Integer annee = ((Number) row[0]).intValue();
+            String formateur = (String) row[1];
+            Long count = ((Number) row[2]).longValue();
+            
+            grouped.computeIfAbsent(annee, k -> new java.util.ArrayList<>());
+            
+            if (grouped.get(annee).size() < 10) {
+                Map<String, Object> item = new LinkedHashMap<>();
+                item.put("formateur", formateur);
+                item.put("count", count);
+                grouped.get(annee).add(item);
+            }
+        }
+        
+        return ResponseEntity.ok(grouped);
+    }
+
+    @GetMapping("/formations/interne")
+    public ResponseEntity<List<Map<String, Object>>> topFormationsInternes() {
+        List<Map<String, Object>> mapped = mapStats(formationRepository.topFormationsByFormateurInterne(), "formation", "count");
+        return ResponseEntity.ok(mapped.stream().limit(10).collect(Collectors.toList()));
+    }
+
+    @GetMapping("/formations/externe")
+    public ResponseEntity<List<Map<String, Object>>> topFormationsExternes() {
+        List<Map<String, Object>> mapped = mapStats(formationRepository.topFormationsByFormateurExterne(), "formation", "count");
+        return ResponseEntity.ok(mapped.stream().limit(10).collect(Collectors.toList()));
+    }
+
+    @GetMapping("/formateurs/top-internes")
+    public ResponseEntity<List<Map<String, Object>>> topFormateursInternes() {
+        List<Map<String, Object>> mapped = mapStats(formationRepository.topFormateursInternes(), "formateur", "count");
+        return ResponseEntity.ok(mapped.stream().limit(5).collect(Collectors.toList()));
+    }
+
+    @GetMapping("/formateurs/top-externes")
+    public ResponseEntity<List<Map<String, Object>>> topFormateursExternes() {
+        List<Map<String, Object>> mapped = mapStats(formationRepository.topFormateursExternes(), "formateur", "count");
+        return ResponseEntity.ok(mapped.stream().limit(5).collect(Collectors.toList()));
     }
 
     @GetMapping("/budget-total")

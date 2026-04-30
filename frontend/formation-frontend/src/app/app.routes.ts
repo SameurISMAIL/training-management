@@ -13,6 +13,7 @@ import { AdminUsersComponent } from './pages/users/admin-users/admin-users.compo
 import { ParticipantListComponent } from './pages/participants/participant-list/participant-list.component';
 import { StatistiqueComponent } from './pages/statistique/statistique.component';
 import { UnauthorizedComponent } from './pages/unauthorized/unauthorized.component';
+import { HomeComponent } from './pages/home/home.component';
 
 export const routes: Routes = [
 	{ path: 'login', component: LoginComponent },
@@ -31,7 +32,11 @@ export const routes: Routes = [
 	{ path: 'admin/users', component: AdminUsersComponent, canActivate: [roleGuard], data: { roles: ['ROLE_ADMIN', 'ADMIN', 'administrateur'] } },
 	{ path: 'admin', redirectTo: 'admin/domaines', pathMatch: 'full' },
 	{ path: 'statistiques', component: StatistiqueComponent, canActivate: [roleGuard], data: { roles: ['ROLE_RESPONSABLE', 'RESPONSABLE', 'responsable', 'ROLE_ADMIN', 'ADMIN', 'administrateur'] }},
+	{ path: 'statistiques/formations', component: StatistiqueComponent, canActivate: [roleGuard], data: { roles: ['ROLE_RESPONSABLE', 'RESPONSABLE', 'responsable', 'ROLE_ADMIN', 'ADMIN', 'administrateur'] }},
+	{ path: 'statistiques/participants', component: StatistiqueComponent, canActivate: [roleGuard], data: { roles: ['ROLE_RESPONSABLE', 'RESPONSABLE', 'responsable', 'ROLE_ADMIN', 'ADMIN', 'administrateur'] }},
+	{ path: 'statistiques/budget', component: StatistiqueComponent, canActivate: [roleGuard], data: { roles: ['ROLE_RESPONSABLE', 'RESPONSABLE', 'responsable', 'ROLE_ADMIN', 'ADMIN', 'administrateur'] }},
+	{ path: 'statistiques/formateurs', component: StatistiqueComponent, canActivate: [roleGuard], data: { roles: ['ROLE_RESPONSABLE', 'RESPONSABLE', 'responsable', 'ROLE_ADMIN', 'ADMIN', 'administrateur'] }},
 	{ path: 'unauthorized', component: UnauthorizedComponent },
-	{ path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-	{ path: '**', redirectTo: 'dashboard' }
+	{ path: '', component: HomeComponent, canActivate: [authGuard] },
+	{ path: '**', redirectTo: '' }
 ];

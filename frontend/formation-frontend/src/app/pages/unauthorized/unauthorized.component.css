@@ -1,0 +1,192 @@
+.unauthorized-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 120px);
+  padding: 2rem;
+}
+
+.unauthorized-card {
+  max-width: 520px;
+  width: 100%;
+  background: var(--mat-sidenav-content-text-color);
+;
+  border-radius: 24px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+  padding: 2.5rem;
+  text-align: center;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.lock-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 1.5rem;
+  background: rgba(79, 70, 229, 0.1);
+  border-radius: 50%;
+}
+
+.lock-icon svg {
+  width: 36px;
+  height: 36px;
+  color: #4f46e5;
+}
+
+.error-code {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 1rem;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+  color: #111827;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.message {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #4b5563;
+  margin-bottom: 1rem;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.help-text {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 2rem;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 0.625rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  border: none;
+  background: none;
+}
+
+.btn-primary {
+  background: #4f46e5;
+  color: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.btn-primary:hover {
+  background: #4338ca;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+.btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+/* Dark mode support - matches the application's theme */
+:host-context(.dark) .unauthorized-card,
+:host-context(.dark-mode) .unauthorized-card,
+:host-context([data-theme="dark"]) .unauthorized-card {
+  background: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+:host-context(.dark) .title,
+:host-context(.dark-mode) .title,
+:host-context([data-theme="dark"]) .title {
+  color: #f9fafb;
+}
+
+:host-context(.dark) .message,
+:host-context(.dark-mode) .message,
+:host-context([data-theme="dark"]) .message {
+  color: #d1d5db;
+}
+
+:host-context(.dark) .help-text,
+:host-context(.dark-mode) .help-text,
+:host-context([data-theme="dark"]) .help-text {
+  color: #9ca3af;
+}
+
+:host-context(.dark) .error-code,
+:host-context(.dark-mode) .error-code,
+:host-context([data-theme="dark"]) .error-code {
+  color: #9ca3af;
+}
+
+:host-context(.dark) .lock-icon,
+:host-context(.dark-mode) .lock-icon,
+:host-context([data-theme="dark"]) .lock-icon {
+  background: rgba(79, 70, 229, 0.2);
+}
+
+:host-context(.dark) .btn-secondary,
+:host-context(.dark-mode) .btn-secondary,
+:host-context([data-theme="dark"]) .btn-secondary {
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+:host-context(.dark) .btn-secondary:hover,
+:host-context(.dark-mode) .btn-secondary:hover,
+:host-context([data-theme="dark"]) .btn-secondary:hover {
+  background: #374151;
+  border-color: #6b7280;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .unauthorized-card {
+    padding: 1.75rem;
+    border-radius: 20px;
+  }
+  
+  .title {
+    font-size: 1.75rem;
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+}

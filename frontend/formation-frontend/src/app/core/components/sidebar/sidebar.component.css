@@ -100,6 +100,27 @@
   display: none;
 }
 
+.stats-nav-list {
+  padding-left: 6px;
+}
+
+.stats-parent-link {
+  margin-bottom: 2px;
+}
+
+.stats-child-link {
+  margin-left: 18px;
+  padding-left: 16px;
+  grid-template-columns: 20px 1fr;
+  font-size: 13px;
+}
+
+.stats-child-link mat-icon {
+  font-size: 18px;
+  width: 20px;
+  height: 20px;
+}
+
 .sidebar-user {
   margin-top: auto;
   padding: 16px 20px;

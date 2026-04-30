@@ -26,6 +26,9 @@ public interface FormationRepository extends JpaRepository<Formation, Long> {
     @Query("SELECT YEAR(f.dateFormation), COUNT(DISTINCT p.id) FROM Formation f LEFT JOIN f.participants p WHERE f.dateFormation IS NOT NULL GROUP BY YEAR(f.dateFormation) ORDER BY YEAR(f.dateFormation)")
     List<Object[]> countParticipantsByAnnee();
 
+    @Query("SELECT YEAR(f.dateFormation), COUNT(DISTINCT fr.id) FROM Formation f LEFT JOIN f.formateur fr WHERE f.dateFormation IS NOT NULL GROUP BY YEAR(f.dateFormation) ORDER BY YEAR(f.dateFormation)")
+    List<Object[]> countFormateursByAnnee();
+
     @Query("SELECT YEAR(f.dateFormation), COALESCE(SUM(f.budget), 0) FROM Formation f WHERE f.dateFormation IS NOT NULL GROUP BY YEAR(f.dateFormation) ORDER BY YEAR(f.dateFormation)")
     List<Object[]> sumBudgetByAnnee();
 
@@ -52,4 +55,19 @@ public interface FormationRepository extends JpaRepository<Formation, Long> {
 
     @Query("SELECT COALESCE(SUM(f.budget), 0) FROM Formation f")
     Double sumTotalBudget();
+
+    @Query("SELECT YEAR(f.dateFormation), CONCAT(COALESCE(fr.nom, 'Inconnu'), ' ', COALESCE(fr.prenom, '')), COUNT(f) FROM Formation f LEFT JOIN f.formateur fr WHERE f.dateFormation IS NOT NULL GROUP BY YEAR(f.dateFormation), fr.id, fr.nom, fr.prenom ORDER BY YEAR(f.dateFormation), COUNT(f) DESC")
+    List<Object[]> topFormateursByAnnee();
+
+    @Query("SELECT f.titre, COUNT(p) FROM Formation f LEFT JOIN f.participants p LEFT JOIN f.formateur fr WHERE fr.type = 'interne' GROUP BY f.id, f.titre ORDER BY COUNT(p) DESC")
+    List<Object[]> topFormationsByFormateurInterne();
+
+    @Query("SELECT f.titre, COUNT(p) FROM Formation f LEFT JOIN f.participants p LEFT JOIN f.formateur fr WHERE fr.type = 'externe' GROUP BY f.id, f.titre ORDER BY COUNT(p) DESC")
+    List<Object[]> topFormationsByFormateurExterne();
+
+    @Query("SELECT CONCAT(COALESCE(fr.nom, 'Inconnu'), ' ', COALESCE(fr.prenom, '')), COUNT(f) FROM Formation f LEFT JOIN f.formateur fr WHERE fr.type = 'interne' GROUP BY fr.id, fr.nom, fr.prenom ORDER BY COUNT(f) DESC")
+    List<Object[]> topFormateursInternes();
+
+    @Query("SELECT CONCAT(COALESCE(fr.nom, 'Inconnu'), ' ', COALESCE(fr.prenom, '')), COUNT(f) FROM Formation f LEFT JOIN f.formateur fr WHERE fr.type = 'externe' GROUP BY fr.id, fr.nom, fr.prenom ORDER BY COUNT(f) DESC")
+    List<Object[]> topFormateursExternes();
 }
