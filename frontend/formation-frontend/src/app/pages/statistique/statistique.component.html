@@ -21,11 +21,32 @@
       </div>
     </div>
 
-    <div class="global-year-selector" *ngIf="selectedSection === null">
-      <label for="globalYearSelect">Sélectionner l'année:</label>
-      <select id="globalYearSelect" [(ngModel)]="selectedGlobalYear" (change)="onGlobalYearChange()" class="year-select">
-        <option *ngFor="let year of availableGlobalYears" [value]="year">{{ year }}</option>
-      </select>
+    <div class="global-year-selector" *ngIf="availableGlobalYears.length > 0">
+      <button type="button" class="year-filter-toggle" (click)="toggleGlobalYearList()" [attr.aria-expanded]="isGlobalYearListOpen">
+        <span class="year-filter-toggle-label">Sélectionner les années</span>
+        <span class="year-filter-toggle-value">{{ selectedGlobalYearsLabel }}</span>
+        <mat-icon class="year-filter-toggle-icon">{{ isGlobalYearListOpen ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </button>
+
+      <div class="year-filter-list" *ngIf="isGlobalYearListOpen">
+        <button type="button" class="year-filter-option year-filter-option-all" (click)="toggleAllGlobalYears()">
+          <span class="year-filter-option-check">
+            <input type="checkbox" [checked]="isAllGlobalYearsSelected()" readonly tabindex="-1" />
+          </span>
+          <span class="year-filter-option-label">Sélectionner toutes les années</span>
+        </button>
+
+        <button
+          type="button"
+          class="year-filter-option"
+          *ngFor="let year of availableGlobalYears"
+          [class.selected]="isGlobalYearSelected(year)"
+          (click)="toggleGlobalYearSelection(year)"
+        >
+          <span class="year-filter-option-check">{{ isGlobalYearSelected(year) ? '✓' : '' }}</span>
+          <span class="year-filter-option-label">{{ year }}</span>
+        </button>
+      </div>
     </div>
 
     <div class="stats-summary-grid">
@@ -91,29 +112,42 @@
               <div class="what-if-control">
                 <div class="what-if-control-copy">
                   <p class="what-if-control-title">Si nous modifions le nombre de formations :</p>
-                  <div class="what-if-control-percent">{{ simulation.formations.deltaPercent | number:'1.0-2' }}%</div>
+                  <div class="what-if-control-percent" (click)="togglePercentageEdit('formations', simulation.formations.deltaPercent)" [class.editing]="isEditingPercentage('formations')">
+                    <ng-container *ngIf="!isEditingPercentage('formations')">
+                      <span class="percent-value">{{ simulation.formations.deltaPercent | number:'1.0-2' }}%</span>
+                    </ng-container>
+                    <ng-container *ngIf="isEditingPercentage('formations')">
+                      <input type="number" class="percent-input" data-metric="formations" [(ngModel)]="editingPercentageValue" [ngModelOptions]="{standalone: true}" (click)="$event.stopPropagation()" (blur)="savePercentageEdit('formations')" (keyup.enter)="savePercentageEdit('formations')" (keyup.escape)="cancelPercentageEdit()" />
+                    </ng-container>
+                  </div>
                 </div>
-                <mat-slider class="what-if-slider" min="0" max="200" step="1" discrete>
+                <mat-slider class="what-if-slider" min="0" [max]="formationsSliderMax" step="1" discrete>
                   <input matSliderThumb formControlName="formations" />
                 </mat-slider>
-                <div class="what-if-control-note">Impact par rapport à l'année {{ selectedGlobalYear }} : {{ simulation.formations.simulated | number:'1.0-0' }} formations</div>
+                <div class="what-if-control-note">Impact par rapport aux années {{ selectedGlobalYearsLabel }} : {{ simulation.formations.simulated | number:'1.0-0' }} formations</div>
               </div>
 
               <div class="what-if-control">
                 <div class="what-if-control-copy">
                   <p class="what-if-control-title">Si nous modifions le nombre moyen de participants :</p>
-                  <div class="what-if-control-percent">{{ simulation.participants.deltaPercent | number:'1.0-2' }}%</div>
+                  <div class="what-if-control-percent" (click)="togglePercentageEdit('participants', simulation.participants.deltaPercent)" [class.editing]="isEditingPercentage('participants')">
+                    <ng-container *ngIf="!isEditingPercentage('participants')">
+                      <span class="percent-value">{{ simulation.participants.deltaPercent | number:'1.0-2' }}%</span>
+                    </ng-container>
+                    <ng-container *ngIf="isEditingPercentage('participants')">
+                      <input type="number" class="percent-input" data-metric="participants" [(ngModel)]="editingPercentageValue" [ngModelOptions]="{standalone: true}" (click)="$event.stopPropagation()" (blur)="savePercentageEdit('participants')" (keyup.enter)="savePercentageEdit('participants')" (keyup.escape)="cancelPercentageEdit()" />
+                    </ng-container>
+                  </div>
                 </div>
                 <mat-slider class="what-if-slider" min="0" max="100" step="0.5" discrete>
                   <input matSliderThumb formControlName="averageParticipantsPerFormation" />
                 </mat-slider>
-                <div class="what-if-control-note">Impact par rapport à l'année {{ selectedGlobalYear }} : {{ simulation.participants.simulated | number:'1.0-0' }} participants</div>
+                <div class="what-if-control-note">Impact par rapport aux années {{ selectedGlobalYearsLabel }} : {{ simulation.participants.simulated | number:'1.0-0' }} participants</div>
               </div>
             </div>
 
             <div class="what-if-center">
               <div class="what-if-orb">
-                <span>Et</span>
                 <strong>SI ?</strong>
               </div>
             </div>
@@ -122,23 +156,37 @@
               <div class="what-if-control">
                 <div class="what-if-control-copy align-right">
                   <p class="what-if-control-title">Si nous modifions le coût unitaire :</p>
-                  <div class="what-if-control-percent">{{ simulation.budget.deltaPercent | number:'1.0-2' }}%</div>
+                  <div class="what-if-control-percent" (click)="togglePercentageEdit('budget', simulation.budget.deltaPercent)" [class.editing]="isEditingPercentage('budget')">
+                    <ng-container *ngIf="!isEditingPercentage('budget')">
+                      <span class="percent-value">{{ simulation.budget.deltaPercent | number:'1.0-2' }}%</span>
+                    </ng-container>
+                    <ng-container *ngIf="isEditingPercentage('budget')">
+                      <input type="number" class="percent-input" data-metric="budget" [(ngModel)]="editingPercentageValue" [ngModelOptions]="{standalone: true}" (click)="$event.stopPropagation()" (blur)="savePercentageEdit('budget')" (keyup.enter)="savePercentageEdit('budget')" (keyup.escape)="cancelPercentageEdit()" />
+                    </ng-container>
+                  </div>
                 </div>
-                <mat-slider class="what-if-slider" min="0" max="20000" step="50" discrete>
+                <mat-slider class="what-if-slider" min="0" [max]="costSliderMax" step="50" discrete>
                   <input matSliderThumb formControlName="costPerFormation" />
                 </mat-slider>
-                <div class="what-if-control-note align-right">Impact par rapport à l'année {{ selectedGlobalYear }} : {{ simulation.budget.simulated | number:'1.0-0' }} TND</div>
+                <div class="what-if-control-note align-right">Impact par rapport aux années {{ selectedGlobalYearsLabel }} : {{ simulation.budget.simulated | number:'1.0-0' }} TND</div>
               </div>
 
               <div class="what-if-control">
                 <div class="what-if-control-copy align-right">
                   <p class="what-if-control-title">Si nous modifions le nombre de formateurs :</p>
-                  <div class="what-if-control-percent">{{ simulation.formateurs.deltaPercent | number:'1.0-2' }}%</div>
+                  <div class="what-if-control-percent" (click)="togglePercentageEdit('formateurs', simulation.formateurs.deltaPercent)" [class.editing]="isEditingPercentage('formateurs')">
+                    <ng-container *ngIf="!isEditingPercentage('formateurs')">
+                      <span class="percent-value">{{ simulation.formateurs.deltaPercent | number:'1.0-2' }}%</span>
+                    </ng-container>
+                    <ng-container *ngIf="isEditingPercentage('formateurs')">
+                      <input type="number" class="percent-input" data-metric="formateurs" [(ngModel)]="editingPercentageValue" [ngModelOptions]="{standalone: true}" (click)="$event.stopPropagation()" (blur)="savePercentageEdit('formateurs')" (keyup.enter)="savePercentageEdit('formateurs')" (keyup.escape)="cancelPercentageEdit()" />
+                    </ng-container>
+                  </div>
                 </div>
-                <mat-slider class="what-if-slider" min="0" max="100" step="1" discrete>
+                <mat-slider class="what-if-slider" min="0" [max]="trainersSliderMax" step="1" discrete>
                   <input matSliderThumb formControlName="trainers" />
                 </mat-slider>
-                <div class="what-if-control-note align-right">Impact par rapport à l'année {{ selectedGlobalYear }} : {{ simulation.formateurs.simulated | number:'1.0-0' }} formateurs</div>
+                <div class="what-if-control-note align-right">Impact par rapport aux années {{ selectedGlobalYearsLabel }} : {{ simulation.formateurs.simulated | number:'1.0-0' }} formateurs</div>
               </div>
             </div>
           </form>
@@ -149,7 +197,7 @@
               <strong class="what-if-metric-value">{{ simulation.formations.simulated | number:'1.0-0' }}</strong>
               <span class="what-if-metric-real">Réel: {{ simulation.formations.real | number:'1.0-0' }}</span>
               <span class="what-if-metric-delta" [ngClass]="growthClass(simulation.formations.deltaPercent)">
-                {{ simulation.formations.deltaPercent > 0 ? '+' : '' }}{{ simulation.formations.deltaPercent | number:'1.0-1' }}% vs année {{ selectedGlobalYear }}
+                {{ simulation.formations.deltaPercent > 0 ? '+' : '' }}{{ simulation.formations.deltaPercent | number:'1.0-1' }}% vs années {{ selectedGlobalYearsLabel }}
               </span>
             </mat-card>
 
@@ -158,7 +206,7 @@
               <strong class="what-if-metric-value">{{ simulation.participants.simulated | number:'1.0-0' }}</strong>
               <span class="what-if-metric-real">Réel: {{ simulation.participants.real | number:'1.0-0' }}</span>
               <span class="what-if-metric-delta" [ngClass]="growthClass(simulation.participants.deltaPercent)">
-                {{ simulation.participants.deltaPercent > 0 ? '+' : '' }}{{ simulation.participants.deltaPercent | number:'1.0-1' }}% vs année {{ selectedGlobalYear }}
+                {{ simulation.participants.deltaPercent > 0 ? '+' : '' }}{{ simulation.participants.deltaPercent | number:'1.0-1' }}% vs années {{ selectedGlobalYearsLabel }}
               </span>
             </mat-card>
 
@@ -167,7 +215,7 @@
               <strong class="what-if-metric-value">{{ simulation.budget.simulated | number:'1.0-0' }} TND</strong>
               <span class="what-if-metric-real">Réel: {{ simulation.budget.real | number:'1.0-0' }} TND</span>
               <span class="what-if-metric-delta" [ngClass]="growthClass(simulation.budget.deltaPercent)">
-                {{ simulation.budget.deltaPercent > 0 ? '+' : '' }}{{ simulation.budget.deltaPercent | number:'1.0-1' }}% vs année {{ selectedGlobalYear }}
+                {{ simulation.budget.deltaPercent > 0 ? '+' : '' }}{{ simulation.budget.deltaPercent | number:'1.0-1' }}% vs années {{ selectedGlobalYearsLabel }}
               </span>
             </mat-card>
 
@@ -176,7 +224,7 @@
               <strong class="what-if-metric-value">{{ simulation.formateurs.simulated | number:'1.0-0' }}</strong>
               <span class="what-if-metric-real">Réel: {{ simulation.formateurs.real | number:'1.0-0' }}</span>
               <span class="what-if-metric-delta" [ngClass]="growthClass(simulation.formateurs.deltaPercent)">
-                {{ simulation.formateurs.deltaPercent > 0 ? '+' : '' }}{{ simulation.formateurs.deltaPercent | number:'1.0-1' }}% vs année {{ selectedGlobalYear }}
+                {{ simulation.formateurs.deltaPercent > 0 ? '+' : '' }}{{ simulation.formateurs.deltaPercent | number:'1.0-1' }}% vs années {{ selectedGlobalYearsLabel }}
               </span>
             </mat-card>
           </div>
@@ -557,12 +605,7 @@
         <mat-card class="detail-card">
           <mat-card-header>
             <mat-card-title>Top 10 formateurs les plus actifs</mat-card-title>
-            <select [(ngModel)]="selectedYearForFormateurs" class="year-selector">
-              <option value="">Toutes les années</option>
-              <option *ngFor="let year of availableYearsForFormateurs" [value]="year">
-                {{ year }}
-              </option>
-            </select>
+            <span class="chart-subtitle">Années sélectionnées: {{ selectedGlobalYearsLabel }}</span>
           </mat-card-header>
           <mat-card-content>
             <div class="formateurs-list">

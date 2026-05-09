@@ -37,8 +37,9 @@ export class StatistiqueService {
 
   constructor(private readonly http: HttpClient) {}
 
-  getGlobalStats(): Observable<GlobalStats> {
-    return this.http.get<Record<string, unknown>>(`${this.apiUrl}/global`).pipe(
+  getGlobalStats(year?: string): Observable<GlobalStats> {
+    const url = `${this.apiUrl}/global${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Record<string, unknown>>(url).pipe(
       map((item) => ({
         totalFormations: Number(item['totalFormations'] ?? 0),
         totalParticipants: Number(item['totalParticipants'] ?? 0),
@@ -49,8 +50,9 @@ export class StatistiqueService {
     );
   }
 
-  getFormationsByDomaine(): Observable<StatCountItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/domaine/formations`).pipe(
+  getFormationsByDomaine(year?: string): Observable<StatCountItem[]> {
+    const url = `${this.apiUrl}/domaine/formations${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['domaine'] ?? 'Non defini'),
         count: Number(item['count'] ?? 0)
@@ -58,8 +60,9 @@ export class StatistiqueService {
     );
   }
 
-  getParticipantsByDomaine(): Observable<StatCountItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/domaine/participants`).pipe(
+  getParticipantsByDomaine(year?: string): Observable<StatCountItem[]> {
+    const url = `${this.apiUrl}/domaine/participants${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['domaine'] ?? 'Non defini'),
         count: Number(item['count'] ?? 0)
@@ -67,8 +70,9 @@ export class StatistiqueService {
     );
   }
 
-  getParticipantsByStructure(): Observable<StatCountItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/structure/participants`).pipe(
+  getParticipantsByStructure(year?: string): Observable<StatCountItem[]> {
+    const url = `${this.apiUrl}/structure/participants${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['structure'] ?? 'Non definie'),
         count: Number(item['count'] ?? 0)
@@ -76,8 +80,9 @@ export class StatistiqueService {
     );
   }
 
-  getFormationsByStructure(): Observable<StatCountItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/structure/formations`).pipe(
+  getFormationsByStructure(year?: string): Observable<StatCountItem[]> {
+    const url = `${this.apiUrl}/structure/formations${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['structure'] ?? 'Non definie'),
         count: Number(item['count'] ?? 0)
@@ -85,8 +90,9 @@ export class StatistiqueService {
     );
   }
 
-  getFormationsByAnnee(): Observable<StatCountItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/annee/formations`).pipe(
+  getFormationsByAnnee(year?: string): Observable<StatCountItem[]> {
+    const url = `${this.apiUrl}/annee/formations${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['annee'] ?? ''),
         count: Number(item['count'] ?? 0)
@@ -94,8 +100,9 @@ export class StatistiqueService {
     );
   }
 
-  getParticipantsByAnnee(): Observable<StatCountItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/annee/participants`).pipe(
+  getParticipantsByAnnee(year?: string): Observable<StatCountItem[]> {
+    const url = `${this.apiUrl}/annee/participants${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['annee'] ?? ''),
         count: Number(item['count'] ?? 0)
@@ -103,8 +110,9 @@ export class StatistiqueService {
     );
   }
 
-  getFormateursByAnnee(): Observable<StatCountItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/annee/formateurs`).pipe(
+  getFormateursByAnnee(year?: string): Observable<StatCountItem[]> {
+    const url = `${this.apiUrl}/annee/formateurs${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['annee'] ?? ''),
         count: Number(item['count'] ?? 0)
@@ -112,8 +120,9 @@ export class StatistiqueService {
     );
   }
 
-  getBudgetByAnnee(): Observable<StatBudgetItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/annee/budget`).pipe(
+  getBudgetByAnnee(year?: string): Observable<StatBudgetItem[]> {
+    const url = `${this.apiUrl}/annee/budget${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['annee'] ?? ''),
         budget: Number(item['budget'] ?? 0)
@@ -121,8 +130,9 @@ export class StatistiqueService {
     );
   }
 
-  getFormateursRepartition(): Observable<FormateurTypeItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/formateurs/repartition`).pipe(
+  getFormateursRepartition(year?: string): Observable<FormateurTypeItem[]> {
+    const url = `${this.apiUrl}/formateurs/repartition${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         type: String(item['type'] ?? 'inconnu'),
         count: Number(item['count'] ?? 0)
@@ -130,8 +140,9 @@ export class StatistiqueService {
     );
   }
 
-  getFormationsByFormateur(): Observable<StatCountItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/formateurs/formations`).pipe(
+  getFormationsByFormateur(year?: string): Observable<StatCountItem[]> {
+    const url = `${this.apiUrl}/formateurs/formations${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['formateur'] ?? 'Inconnu'),
         count: Number(item['count'] ?? 0)
@@ -139,8 +150,9 @@ export class StatistiqueService {
     );
   }
 
-  getFormationsByMois(): Observable<StatCountItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/mensuel/formations`).pipe(
+  getFormationsByMois(year?: string): Observable<StatCountItem[]> {
+    const url = `${this.apiUrl}/mensuel/formations${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['mois'] ?? ''),
         count: Number(item['count'] ?? 0)
@@ -148,8 +160,9 @@ export class StatistiqueService {
     );
   }
 
-  getBudgetByDomaine(): Observable<StatBudgetItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/finances/domaine`).pipe(
+  getBudgetByDomaine(year?: string): Observable<StatBudgetItem[]> {
+    const url = `${this.apiUrl}/finances/domaine${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['domaine'] ?? 'Non defini'),
         budget: Number(item['budget'] ?? 0)
@@ -157,8 +170,9 @@ export class StatistiqueService {
     );
   }
 
-  getBudgetByFormation(): Observable<StatBudgetItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/finances/formation`).pipe(
+  getBudgetByFormation(year?: string): Observable<StatBudgetItem[]> {
+    const url = `${this.apiUrl}/finances/formation${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['formation'] ?? 'Sans titre'),
         budget: Number(item['budget'] ?? 0)
@@ -166,8 +180,9 @@ export class StatistiqueService {
     );
   }
 
-  getTopFormations(): Observable<StatCountItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/avancees/top-formations`).pipe(
+  getTopFormations(year?: string): Observable<StatCountItem[]> {
+    const url = `${this.apiUrl}/avancees/top-formations${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['formation'] ?? 'Sans titre'),
         count: Number(item['count'] ?? 0)
@@ -175,14 +190,16 @@ export class StatistiqueService {
     );
   }
 
-  getAverageParticipantsPerFormation(): Observable<number> {
-    return this.http.get<Record<string, unknown>>(`${this.apiUrl}/avancees/moyenne-participants`).pipe(
+  getAverageParticipantsPerFormation(year?: string): Observable<number> {
+    const url = `${this.apiUrl}/avancees/moyenne-participants${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Record<string, unknown>>(url).pipe(
       map((item) => Number(item['average'] ?? 0))
     );
   }
 
-  getMostActiveParticipants(): Observable<StatCountItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/avancees/participants-actifs`).pipe(
+  getMostActiveParticipants(year?: string): Observable<StatCountItem[]> {
+    const url = `${this.apiUrl}/avancees/participants-actifs${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['participant'] ?? 'Inconnu'),
         count: Number(item['count'] ?? 0)
@@ -190,8 +207,9 @@ export class StatistiqueService {
     );
   }
 
-  getTopFormateursByAnnee(): Observable<Record<string, Array<{ formateur: string; count: number }>>> {
-    return this.http.get<Record<string, Array<Record<string, unknown>>>>(`${this.apiUrl}/avancees/top-formateurs`).pipe(
+  getTopFormateursByAnnee(year?: string): Observable<Record<string, Array<{ formateur: string; count: number }>>> {
+    const url = `${this.apiUrl}/avancees/top-formateurs${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Record<string, Array<Record<string, unknown>>>>(url).pipe(
       map((response) => {
         const result: Record<string, Array<{ formateur: string; count: number }>> = {};
         for (const [key, items] of Object.entries(response)) {
@@ -205,8 +223,9 @@ export class StatistiqueService {
     );
   }
 
-  getTopFormationsInternes(): Observable<StatCountItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/formations/interne`).pipe(
+  getTopFormationsInternes(year?: string): Observable<StatCountItem[]> {
+    const url = `${this.apiUrl}/formations/interne${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['formation'] ?? 'Sans titre'),
         count: Number(item['count'] ?? 0)
@@ -214,8 +233,9 @@ export class StatistiqueService {
     );
   }
 
-  getTopFormationsExternes(): Observable<StatCountItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/formations/externe`).pipe(
+  getTopFormationsExternes(year?: string): Observable<StatCountItem[]> {
+    const url = `${this.apiUrl}/formations/externe${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['formation'] ?? 'Sans titre'),
         count: Number(item['count'] ?? 0)
@@ -223,8 +243,9 @@ export class StatistiqueService {
     );
   }
 
-  getTopFormateursInternes(): Observable<StatCountItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/formateurs/top-internes`).pipe(
+  getTopFormateursInternes(year?: string): Observable<StatCountItem[]> {
+    const url = `${this.apiUrl}/formateurs/top-internes${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['formateur'] ?? 'Inconnu'),
         count: Number(item['count'] ?? 0)
@@ -232,8 +253,9 @@ export class StatistiqueService {
     );
   }
 
-  getTopFormateursExternes(): Observable<StatCountItem[]> {
-    return this.http.get<Array<Record<string, unknown>>>(`${this.apiUrl}/formateurs/top-externes`).pipe(
+  getTopFormateursExternes(year?: string): Observable<StatCountItem[]> {
+    const url = `${this.apiUrl}/formateurs/top-externes${year ? `?annee=${encodeURIComponent(year)}` : ''}`;
+    return this.http.get<Array<Record<string, unknown>>>(url).pipe(
       map((items) => items.map((item) => ({
         label: String(item['formateur'] ?? 'Inconnu'),
         count: Number(item['count'] ?? 0)
@@ -241,8 +263,8 @@ export class StatistiqueService {
     );
   }
 
-  getBudgetTotal(): Observable<number> {
-    return this.getGlobalStats().pipe(
+  getBudgetTotal(year?: string): Observable<number> {
+    return this.getGlobalStats(year).pipe(
       map((response) => Number(response.budgetTotal ?? 0))
     );
   }
